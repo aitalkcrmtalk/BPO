@@ -8,13 +8,6 @@ import type { TenantRole } from "@/types/database";
 type AnyClient = any;
 
 export const getMyTenantContext = createServerFn({ method: "GET" })
-  .handler(async (): Promise<TenantContext> => {
-    // Wrapper delegates to protected impl via middleware — we can't attach
-    // middleware conditionally, so use the middleware variant below directly.
-    throw new Error("Use getMyTenantContextAuthed");
-  });
-
-export const getMyTenantContextAuthed = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<TenantContext> => {
     const supabase = context.supabase as AnyClient;
