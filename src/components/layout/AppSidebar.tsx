@@ -6,7 +6,6 @@ const items = [
   { to: "/app/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/app/clientes", label: "Clientes", icon: Users },
   { to: "/app/documentos", label: "Documentos", icon: FileText },
-  { to: "/app/automacoes", label: "Automações", icon: Workflow },
   { to: "/app/usuarios", label: "Usuários", icon: UserCog },
   { to: "/app/assinatura", label: "Assinatura", icon: CreditCard },
   { to: "/app/configuracoes", label: "Configurações", icon: Settings },
