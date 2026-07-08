@@ -27,6 +27,7 @@ import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppConfiguracoesRouteImport } from './routes/_authenticated/app.configuracoes'
 import { Route as AuthenticatedAppClientesRouteImport } from './routes/_authenticated/app.clientes'
+import { Route as AuthenticatedAppAutomacoesRouteImport } from './routes/_authenticated/app.automacoes'
 import { Route as AuthenticatedAppAssinaturaRouteImport } from './routes/_authenticated/app.assinatura'
 import { Route as AuthenticatedAdminEmpresasRouteImport } from './routes/_authenticated/admin.empresas'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
@@ -125,6 +126,12 @@ const AuthenticatedAppClientesRoute =
     path: '/clientes',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppAutomacoesRoute =
+  AuthenticatedAppAutomacoesRouteImport.update({
+    id: '/automacoes',
+    path: '/automacoes',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppAssinaturaRoute =
   AuthenticatedAppAssinaturaRouteImport.update({
     id: '/assinatura',
@@ -158,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
   '/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
+  '/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
   '/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -180,6 +188,7 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
   '/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
+  '/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
   '/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -204,6 +213,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
   '/_authenticated/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
+  '/_authenticated/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/_authenticated/app/clientes': typeof AuthenticatedAppClientesRoute
   '/_authenticated/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/empresas'
     | '/app/assinatura'
+    | '/app/automacoes'
     | '/app/clientes'
     | '/app/configuracoes'
     | '/app/dashboard'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/empresas'
     | '/app/assinatura'
+    | '/app/automacoes'
     | '/app/clientes'
     | '/app/configuracoes'
     | '/app/dashboard'
@@ -273,6 +285,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/empresas'
     | '/_authenticated/app/assinatura'
+    | '/_authenticated/app/automacoes'
     | '/_authenticated/app/clientes'
     | '/_authenticated/app/configuracoes'
     | '/_authenticated/app/dashboard'
@@ -423,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppClientesRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/automacoes': {
+      id: '/_authenticated/app/automacoes'
+      path: '/automacoes'
+      fullPath: '/app/automacoes'
+      preLoaderRoute: typeof AuthenticatedAppAutomacoesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/assinatura': {
       id: '/_authenticated/app/assinatura'
       path: '/assinatura'
@@ -462,6 +482,7 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppAssinaturaRoute: typeof AuthenticatedAppAssinaturaRoute
+  AuthenticatedAppAutomacoesRoute: typeof AuthenticatedAppAutomacoesRoute
   AuthenticatedAppClientesRoute: typeof AuthenticatedAppClientesRoute
   AuthenticatedAppConfiguracoesRoute: typeof AuthenticatedAppConfiguracoesRoute
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
@@ -471,6 +492,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppAssinaturaRoute: AuthenticatedAppAssinaturaRoute,
+  AuthenticatedAppAutomacoesRoute: AuthenticatedAppAutomacoesRoute,
   AuthenticatedAppClientesRoute: AuthenticatedAppClientesRoute,
   AuthenticatedAppConfiguracoesRoute: AuthenticatedAppConfiguracoesRoute,
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
