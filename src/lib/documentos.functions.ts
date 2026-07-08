@@ -96,6 +96,7 @@ export const upsertDocumento = createServerFn({ method: "POST" })
         .eq("id", data.id)
         .eq("empresa_id", empresaId);
       if (error) throw new Error(error.message);
+      await fireWebhook(supabase, empresaId, "documento.atualizado", data.id);
       return { ok: true, id: data.id };
     }
     const { data: inserted, error } = await supabase
@@ -104,8 +105,36 @@ export const upsertDocumento = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
-    return { ok: true, id: inserted?.id as string };
+    const newId = inserted?.id as string;
+    await fireWebhook(supabase, empresaId, "documento.criado", newId);
+    return { ok: true, id: newId };
   });
+
+async function fireWebhook(
+  supabase: AnyClient,
+  empresaId: string,
+  evento: string,
+  documentoId: string,
+): Promise<void> {
+  const { data: hook } = await supabase
+    .from("webhooks_empresa")
+    .select("url, secret, ativo, eventos")
+    .eq("empresa_id", empresaId)
+    .maybeSingle();
+  if (!hook || !hook.ativo) return;
+  if (Array.isArray(hook.eventos) && !hook.eventos.includes(evento)) return;
+  try {
+    const { dispatchWebhook } = await import("./webhooks.server");
+    await dispatchWebhook(hook.url, hook.secret, {
+      evento,
+      empresa_id: empresaId,
+      documento_id: documentoId,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (e) {
+    console.warn("[webhook] falha silenciosa:", e);
+  }
+}
 
 export const deletarDocumento = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

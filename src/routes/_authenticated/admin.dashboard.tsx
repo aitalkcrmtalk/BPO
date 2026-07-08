@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { adminStats } from "@/lib/admin.functions";
+import { formatBRL } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/dashboard")({ component: AdminDashboard });
 
@@ -13,6 +14,8 @@ function AdminDashboard() {
     { label: "Empresas inativas", value: data?.empresasInativas ?? 0 },
     { label: "Perfis", value: data?.totalPerfis ?? 0 },
     { label: "Documentos", value: data?.totalDocumentos ?? 0 },
+    { label: "Docs (30d)", value: data?.documentos30d ?? 0 },
+    { label: "MRR estimado", value: formatBRL(data?.mrrEstimado ?? 0) },
   ];
   return (
     <div>
