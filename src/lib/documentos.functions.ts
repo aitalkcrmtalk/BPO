@@ -5,12 +5,12 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyClient = any;
 
-export const TIPOS_DOCUMENTO = ["nfe", "nfse", "boleto", "extrato", "outro"] as const;
+export const TIPOS_DOCUMENTO = ["nota_fiscal", "contrato", "comprovante", "boleto", "outros"] as const;
 export const STATUS_DOCUMENTO = [
   "pendente",
   "em_processamento",
-  "processado",
-  "erro",
+  "concluido",
+  "rejeitado",
   "arquivado",
 ] as const;
 
