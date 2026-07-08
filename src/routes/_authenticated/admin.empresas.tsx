@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -125,16 +125,13 @@ function AssinaturaDialog({
   const [plano, setPlano] = useState<string>("padrao");
   const [valorBase, setValorBase] = useState<number>(0);
 
-  // Sync state when data arrives
-  const dataKey = ass?.id ?? "";
-  if (ass && dataKey && (status === "ativa" && plano === "padrao" && valorBase === 0)) {
-    // one-shot init after first load
-    queueMicrotask(() => {
+  useEffect(() => {
+    if (ass) {
       setStatus(ass.status);
       setPlano(ass.plano);
       setValorBase(Number(ass.valor_base ?? 0));
-    });
-  }
+    }
+  }, [ass?.id, ass?.status, ass?.plano, ass?.valor_base]);
 
   const saveStatus = useMutation({
     mutationFn: () =>
