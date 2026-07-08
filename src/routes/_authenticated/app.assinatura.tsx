@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTenantContext } from "@/hooks/useTenantContext";
 import { PLANS, planByTier } from "@/lib/plans";
 import { PlanCard } from "@/components/PlanCard";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusBadge, subscriptionVariant } from "@/components/StatusBadge";
 
 export const Route = createFileRoute("/_authenticated/app/assinatura")({ component: Page });
 
@@ -17,7 +17,7 @@ function Page() {
           <div className="flex items-center gap-3">
             <div className="text-sm text-muted-foreground">Plano atual</div>
             <div className="text-lg font-semibold">{current.name}</div>
-            {data?.subscriptionStatus && <StatusBadge status={data.subscriptionStatus} />}
+            {data?.subscriptionStatus && <StatusBadge label={data.subscriptionStatus} variant={subscriptionVariant(data.subscriptionStatus)} />}
           </div>
           <div className="mt-1 text-sm text-muted-foreground">{current.description}</div>
         </div>

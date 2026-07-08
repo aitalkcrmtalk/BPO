@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/StatusBadge";
+import { StatusBadge, tenantStatusVariant } from "@/components/StatusBadge";
 import { listAllTenants, setTenantStatus } from "@/lib/admin.functions";
 import type { Tenant } from "@/types";
 
@@ -32,7 +32,7 @@ function Page() {
               <div className="text-xs text-muted-foreground">{t.slug} · plano {t.plan}</div>
             </div>
             <div className="flex items-center gap-3">
-              <StatusBadge status={t.status} />
+              <StatusBadge label={t.status} variant={tenantStatusVariant(t.status)} />
               {t.status === "approved" && (
                 <Button size="sm" variant="outline" onClick={() => mut.mutate({ tenant_id: t.id, status: "suspended" })}>Suspender</Button>
               )}
