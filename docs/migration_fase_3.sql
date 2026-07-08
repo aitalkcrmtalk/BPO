@@ -92,6 +92,14 @@ CREATE INDEX IF NOT EXISTS documentos_empresa_tipo_status_idx
   ON public.documentos(empresa_id, tipo, status);
 
 -- ---------------------------------------------------------------------------
+-- 5.1 Unicidades para upsert de assinatura e itens (admin da plataforma)
+-- ---------------------------------------------------------------------------
+CREATE UNIQUE INDEX IF NOT EXISTS assinaturas_empresa_uniq
+  ON public.assinaturas(empresa_id);
+CREATE UNIQUE INDEX IF NOT EXISTS itens_assinatura_uniq
+  ON public.itens_assinatura(assinatura_id, modulo_id);
+
+-- ---------------------------------------------------------------------------
 -- 6. Função agregadora financeira (SECURITY DEFINER, escopo empresa)
 -- ---------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.agregar_financeiro(
