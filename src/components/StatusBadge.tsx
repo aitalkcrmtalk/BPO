@@ -27,9 +27,9 @@ export function subscriptionVariant(status: string): Variant {
 }
 
 export function documentoStatusVariant(status: string): Variant {
-  if (status === "processado") return "success";
+  if (status === "concluido") return "success";
   if (status === "em_processamento") return "info";
-  if (status === "erro") return "destructive";
+  if (status === "rejeitado") return "destructive";
   if (status === "arquivado") return "muted";
   return "warning";
 }

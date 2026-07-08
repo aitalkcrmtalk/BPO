@@ -64,18 +64,18 @@ type Row = {
 type Cliente = { id: string; nome: string };
 
 const TIPO_LABEL: Record<string, string> = {
-  nfe: "NF-e",
-  nfse: "NFS-e",
+  nota_fiscal: "Nota fiscal",
+  contrato: "Contrato",
+  comprovante: "Comprovante",
   boleto: "Boleto",
-  extrato: "Extrato",
-  outro: "Outro",
+  outros: "Outros",
 };
 
 const STATUS_LABEL: Record<string, string> = {
   pendente: "Pendente",
   em_processamento: "Em processamento",
-  processado: "Processado",
-  erro: "Erro",
+  concluido: "Concluído",
+  rejeitado: "Rejeitado",
   arquivado: "Arquivado",
 };
 
@@ -98,7 +98,7 @@ type FormState = {
 
 const emptyForm: FormState = {
   titulo: "",
-  tipo: "outro",
+  tipo: "outros",
   status: "pendente",
   cliente_id: "",
   url_arquivo: "",
