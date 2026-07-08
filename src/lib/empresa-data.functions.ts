@@ -6,7 +6,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 type AnyClient = any;
 
 async function getMinhaEmpresaId(supabase: AnyClient, userId: string): Promise<string | null> {
-  const { data } = await supabase.from("perfis").select("empresa_id").eq("usuario_id", userId).maybeSingle();
+  const { data } = await supabase.from("perfis").select("empresa_id").eq("id", userId).maybeSingle();
   return (data?.empresa_id as string) ?? null;
 }
 
