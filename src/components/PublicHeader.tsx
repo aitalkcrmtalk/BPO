@@ -1,15 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import logoAsset from "@/assets/crm-talk-logo.png.asset.json";
 
 export function PublicHeader() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-semibold text-primary">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary text-primary-foreground">
-            <span className="text-sm font-bold">BPO</span>
-          </div>
-          <span>Projeto-BPO</span>
+          <img src={logoAsset.url} alt="CRM Talk" className="h-9 w-9 rounded-lg object-cover" />
+          <span>CRM Talk</span>
         </Link>
         <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
           <a href="#como-funciona" className="hover:text-foreground">Como funciona</a>
