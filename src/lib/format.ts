@@ -17,6 +17,11 @@ export function formatDate(iso: string | null | undefined): string {
   }
 }
 
+export function formatBRL(value: number | null | undefined): string {
+  const n = Number(value ?? 0);
+  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
 export function formatDateTime(iso: string | null | undefined): string {
   if (!iso) return "—";
   try {
