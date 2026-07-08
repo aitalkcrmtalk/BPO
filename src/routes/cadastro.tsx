@@ -14,10 +14,10 @@ export const Route = createFileRoute("/cadastro")({
 });
 
 type FormState = {
-  company_name: string; document: string; segment: string; phone: string;
-  requester_name: string; requester_email: string; requester_role: string; terms: boolean;
+  company_name: string; document: string; razao_social: string;
+  requester_name: string; requester_email: string; terms: boolean;
 };
-const initial: FormState = { company_name: "", document: "", segment: "", phone: "", requester_name: "", requester_email: "", requester_role: "", terms: false };
+const initial: FormState = { company_name: "", document: "", razao_social: "", requester_name: "", requester_email: "", terms: false };
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ function SignupPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Falha no envio");
-      navigate({ to: "/cadastro/aguardando", search: { protocol: json.protocol } });
+      navigate({ to: "/cadastro/aguardando", search: { email: form.requester_email } });
     } catch (err) {
       toast.error((err as Error).message);
     } finally { setLoading(false); }
@@ -55,10 +55,11 @@ function SignupPage() {
           <p className="mt-1 text-sm text-muted-foreground">Nossa equipe aprova em até 24h úteis.</p>
           {step === 1 && (
             <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <Field label="Nome da empresa" id="company_name" v={form.company_name} on={(v) => upd("company_name", v)} />
+              <Field label="Nome fantasia" id="company_name" v={form.company_name} on={(v) => upd("company_name", v)} />
               <Field label="CNPJ" id="document" v={form.document} on={(v) => upd("document", v)} />
-              <Field label="Segmento" id="segment" v={form.segment} on={(v) => upd("segment", v)} />
-              <Field label="Telefone" id="phone" v={form.phone} on={(v) => upd("phone", v)} />
+              <div className="md:col-span-2">
+                <Field label="Razão social" id="razao_social" v={form.razao_social} on={(v) => upd("razao_social", v)} />
+              </div>
               <div className="md:col-span-2 flex justify-end"><Button onClick={() => setStep(2)} disabled={!form.company_name || !form.document}>Continuar</Button></div>
             </div>
           )}
@@ -66,7 +67,6 @@ function SignupPage() {
             <div className="mt-6 grid gap-4 md:grid-cols-2">
               <Field label="Seu nome" id="req_name" v={form.requester_name} on={(v) => upd("requester_name", v)} />
               <Field label="Email corporativo" id="req_email" type="email" v={form.requester_email} on={(v) => upd("requester_email", v)} />
-              <Field label="Cargo" id="req_role" v={form.requester_role} on={(v) => upd("requester_role", v)} />
               <div className="md:col-span-2 flex justify-between">
                 <Button variant="ghost" onClick={() => setStep(1)}>Voltar</Button>
                 <Button onClick={() => setStep(3)} disabled={!form.requester_name || !form.requester_email}>Continuar</Button>
