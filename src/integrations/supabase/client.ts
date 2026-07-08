@@ -1,20 +1,31 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 
-const url =
-  import.meta.env.VITE_SUPABASE_URL ??
-  (typeof process !== "undefined" ? process.env.SUPABASE_URL : undefined);
-const key =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
-  import.meta.env.VITE_SUPABASE_ANON_KEY ??
-  (typeof process !== "undefined" ? process.env.SUPABASE_PUBLISHABLE_KEY : undefined);
+// Config injetada pelo SSR via window.__SUPABASE_CFG__ (ver src/routes/__root.tsx),
+// alimentada pelos secrets CLIENT_SUPABASE_URL / CLIENT_SUPABASE_ANON_KEY.
+// Em SSR, lê direto de process.env.
+type PublicCfg = { url: string; anonKey: string };
 
-if (!url || !key) {
-  // Não estoura no build; server functions/telas de erro tratam a ausência.
-  console.warn("[supabase] VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY não configurados.");
+function readCfg(): PublicCfg {
+  if (typeof window !== "undefined") {
+    const w = (window as unknown as { __SUPABASE_CFG__?: PublicCfg }).__SUPABASE_CFG__;
+    if (w?.url && w?.anonKey) return w;
+  }
+  if (typeof process !== "undefined" && process.env) {
+    const url = process.env.CLIENT_SUPABASE_URL ?? "";
+    const anonKey = process.env.CLIENT_SUPABASE_ANON_KEY ?? "";
+    if (url && anonKey) return { url, anonKey };
+  }
+  return { url: "", anonKey: "" };
 }
 
-export const supabase = createClient<Database>(url ?? "https://placeholder.supabase.co", key ?? "placeholder", {
+const { url, anonKey } = readCfg();
+
+if (!url || !anonKey) {
+  console.warn("[supabase] CLIENT_SUPABASE_URL / CLIENT_SUPABASE_ANON_KEY não configurados.");
+}
+
+export const supabase = createClient<Database>(url || "https://placeholder.supabase.co", anonKey || "placeholder", {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
