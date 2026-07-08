@@ -22,17 +22,12 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as ApiPublicRegisterTenantRouteImport } from './routes/api/public/register-tenant'
 import { Route as AuthenticatedAppUsuariosRouteImport } from './routes/_authenticated/app.usuarios'
-import { Route as AuthenticatedAppOnboardingRouteImport } from './routes/_authenticated/app.onboarding'
 import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authenticated/app.documentos'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppConfiguracoesRouteImport } from './routes/_authenticated/app.configuracoes'
 import { Route as AuthenticatedAppClientesRouteImport } from './routes/_authenticated/app.clientes'
-import { Route as AuthenticatedAppAutomacoesRouteImport } from './routes/_authenticated/app.automacoes'
 import { Route as AuthenticatedAppAssinaturaRouteImport } from './routes/_authenticated/app.assinatura'
-import { Route as AuthenticatedAdminTenantsRouteImport } from './routes/_authenticated/admin.tenants'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
-import { Route as AuthenticatedAdminAuditLogsRouteImport } from './routes/_authenticated/admin.audit-logs'
-import { Route as AuthenticatedAdminAprovacoesRouteImport } from './routes/_authenticated/admin.aprovacoes'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -99,12 +94,6 @@ const AuthenticatedAppUsuariosRoute =
     path: '/usuarios',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAppOnboardingRoute =
-  AuthenticatedAppOnboardingRouteImport.update({
-    id: '/onboarding',
-    path: '/onboarding',
-    getParentRoute: () => AuthenticatedAppRoute,
-  } as any)
 const AuthenticatedAppDocumentosRoute =
   AuthenticatedAppDocumentosRouteImport.update({
     id: '/documentos',
@@ -129,40 +118,16 @@ const AuthenticatedAppClientesRoute =
     path: '/clientes',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAppAutomacoesRoute =
-  AuthenticatedAppAutomacoesRouteImport.update({
-    id: '/automacoes',
-    path: '/automacoes',
-    getParentRoute: () => AuthenticatedAppRoute,
-  } as any)
 const AuthenticatedAppAssinaturaRoute =
   AuthenticatedAppAssinaturaRouteImport.update({
     id: '/assinatura',
     path: '/assinatura',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const AuthenticatedAdminTenantsRoute =
-  AuthenticatedAdminTenantsRouteImport.update({
-    id: '/tenants',
-    path: '/tenants',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 const AuthenticatedAdminDashboardRoute =
   AuthenticatedAdminDashboardRouteImport.update({
     id: '/dashboard',
     path: '/dashboard',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminAuditLogsRoute =
-  AuthenticatedAdminAuditLogsRouteImport.update({
-    id: '/audit-logs',
-    path: '/audit-logs',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminAprovacoesRoute =
-  AuthenticatedAdminAprovacoesRouteImport.update({
-    id: '/aprovacoes',
-    path: '/aprovacoes',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 
@@ -177,17 +142,12 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
-  '/admin/aprovacoes': typeof AuthenticatedAdminAprovacoesRoute
-  '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
-  '/admin/tenants': typeof AuthenticatedAdminTenantsRoute
   '/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
-  '/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
   '/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
-  '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
 }
@@ -202,17 +162,12 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
-  '/admin/aprovacoes': typeof AuthenticatedAdminAprovacoesRoute
-  '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
-  '/admin/tenants': typeof AuthenticatedAdminTenantsRoute
   '/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
-  '/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
   '/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
-  '/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
 }
@@ -229,17 +184,12 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
-  '/_authenticated/admin/aprovacoes': typeof AuthenticatedAdminAprovacoesRoute
-  '/_authenticated/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
-  '/_authenticated/admin/tenants': typeof AuthenticatedAdminTenantsRoute
   '/_authenticated/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
-  '/_authenticated/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/_authenticated/app/clientes': typeof AuthenticatedAppClientesRoute
   '/_authenticated/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/app/documentos': typeof AuthenticatedAppDocumentosRoute
-  '/_authenticated/app/onboarding': typeof AuthenticatedAppOnboardingRoute
   '/_authenticated/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
 }
@@ -256,17 +206,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/cadastro/aguardando'
-    | '/admin/aprovacoes'
-    | '/admin/audit-logs'
     | '/admin/dashboard'
-    | '/admin/tenants'
     | '/app/assinatura'
-    | '/app/automacoes'
     | '/app/clientes'
     | '/app/configuracoes'
     | '/app/dashboard'
     | '/app/documentos'
-    | '/app/onboarding'
     | '/app/usuarios'
     | '/api/public/register-tenant'
   fileRoutesByTo: FileRoutesByTo
@@ -281,17 +226,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/cadastro/aguardando'
-    | '/admin/aprovacoes'
-    | '/admin/audit-logs'
     | '/admin/dashboard'
-    | '/admin/tenants'
     | '/app/assinatura'
-    | '/app/automacoes'
     | '/app/clientes'
     | '/app/configuracoes'
     | '/app/dashboard'
     | '/app/documentos'
-    | '/app/onboarding'
     | '/app/usuarios'
     | '/api/public/register-tenant'
   id:
@@ -307,17 +247,12 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/app'
     | '/cadastro/aguardando'
-    | '/_authenticated/admin/aprovacoes'
-    | '/_authenticated/admin/audit-logs'
     | '/_authenticated/admin/dashboard'
-    | '/_authenticated/admin/tenants'
     | '/_authenticated/app/assinatura'
-    | '/_authenticated/app/automacoes'
     | '/_authenticated/app/clientes'
     | '/_authenticated/app/configuracoes'
     | '/_authenticated/app/dashboard'
     | '/_authenticated/app/documentos'
-    | '/_authenticated/app/onboarding'
     | '/_authenticated/app/usuarios'
     | '/api/public/register-tenant'
   fileRoutesById: FileRoutesById
@@ -427,13 +362,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppUsuariosRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/app/onboarding': {
-      id: '/_authenticated/app/onboarding'
-      path: '/onboarding'
-      fullPath: '/app/onboarding'
-      preLoaderRoute: typeof AuthenticatedAppOnboardingRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
     '/_authenticated/app/documentos': {
       id: '/_authenticated/app/documentos'
       path: '/documentos'
@@ -462,26 +390,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppClientesRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/_authenticated/app/automacoes': {
-      id: '/_authenticated/app/automacoes'
-      path: '/automacoes'
-      fullPath: '/app/automacoes'
-      preLoaderRoute: typeof AuthenticatedAppAutomacoesRouteImport
-      parentRoute: typeof AuthenticatedAppRoute
-    }
     '/_authenticated/app/assinatura': {
       id: '/_authenticated/app/assinatura'
       path: '/assinatura'
       fullPath: '/app/assinatura'
       preLoaderRoute: typeof AuthenticatedAppAssinaturaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
-    }
-    '/_authenticated/admin/tenants': {
-      id: '/_authenticated/admin/tenants'
-      path: '/tenants'
-      fullPath: '/admin/tenants'
-      preLoaderRoute: typeof AuthenticatedAdminTenantsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/dashboard': {
       id: '/_authenticated/admin/dashboard'
@@ -490,35 +404,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/audit-logs': {
-      id: '/_authenticated/admin/audit-logs'
-      path: '/audit-logs'
-      fullPath: '/admin/audit-logs'
-      preLoaderRoute: typeof AuthenticatedAdminAuditLogsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/aprovacoes': {
-      id: '/_authenticated/admin/aprovacoes'
-      path: '/aprovacoes'
-      fullPath: '/admin/aprovacoes'
-      preLoaderRoute: typeof AuthenticatedAdminAprovacoesRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
-  AuthenticatedAdminAprovacoesRoute: typeof AuthenticatedAdminAprovacoesRoute
-  AuthenticatedAdminAuditLogsRoute: typeof AuthenticatedAdminAuditLogsRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
-  AuthenticatedAdminTenantsRoute: typeof AuthenticatedAdminTenantsRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
-  AuthenticatedAdminAprovacoesRoute: AuthenticatedAdminAprovacoesRoute,
-  AuthenticatedAdminAuditLogsRoute: AuthenticatedAdminAuditLogsRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
-  AuthenticatedAdminTenantsRoute: AuthenticatedAdminTenantsRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
@@ -526,23 +420,19 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppAssinaturaRoute: typeof AuthenticatedAppAssinaturaRoute
-  AuthenticatedAppAutomacoesRoute: typeof AuthenticatedAppAutomacoesRoute
   AuthenticatedAppClientesRoute: typeof AuthenticatedAppClientesRoute
   AuthenticatedAppConfiguracoesRoute: typeof AuthenticatedAppConfiguracoesRoute
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
   AuthenticatedAppDocumentosRoute: typeof AuthenticatedAppDocumentosRoute
-  AuthenticatedAppOnboardingRoute: typeof AuthenticatedAppOnboardingRoute
   AuthenticatedAppUsuariosRoute: typeof AuthenticatedAppUsuariosRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppAssinaturaRoute: AuthenticatedAppAssinaturaRoute,
-  AuthenticatedAppAutomacoesRoute: AuthenticatedAppAutomacoesRoute,
   AuthenticatedAppClientesRoute: AuthenticatedAppClientesRoute,
   AuthenticatedAppConfiguracoesRoute: AuthenticatedAppConfiguracoesRoute,
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
   AuthenticatedAppDocumentosRoute: AuthenticatedAppDocumentosRoute,
-  AuthenticatedAppOnboardingRoute: AuthenticatedAppOnboardingRoute,
   AuthenticatedAppUsuariosRoute: AuthenticatedAppUsuariosRoute,
 }
 
