@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { LayoutDashboard, Users, FileText, Workflow, Settings, CreditCard, UserCog } from "lucide-react";
+import { LayoutDashboard, Users, FileText, Settings, CreditCard, UserCog } from "lucide-react";
 import logoAsset from "@/assets/crm-talk-logo.png.asset.json";
 
 const items = [
