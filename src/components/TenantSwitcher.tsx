@@ -1,31 +1,14 @@
-import { Building2, Check, ChevronsUpDown } from "lucide-react";
+import { Building2 } from "lucide-react";
 import { useTenantContext } from "@/hooks/useTenantContext";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export function TenantSwitcher() {
   const { data } = useTenantContext();
-  const active = data?.tenant;
-  const tenants = data?.tenants ?? [];
-  if (!active) return null;
+  const empresa = data?.empresa;
+  if (!empresa) return null;
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Building2 className="h-4 w-4" />
-          <span className="max-w-[160px] truncate">{active.name}</span>
-          <ChevronsUpDown className="h-3 w-3 opacity-60" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel>Seus tenants</DropdownMenuLabel>
-        {tenants.map((t) => (
-          <DropdownMenuItem key={t.id} className="flex items-center justify-between">
-            <span className="truncate">{t.name}</span>
-            {t.id === active.id && <Check className="h-4 w-4" />}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-2 rounded-md border bg-card px-3 py-1.5 text-sm">
+      <Building2 className="h-4 w-4 text-muted-foreground" />
+      <span className="max-w-[200px] truncate font-medium">{empresa.nome}</span>
+    </div>
   );
 }
