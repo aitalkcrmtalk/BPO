@@ -23,6 +23,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as ApiPublicRegisterTenantRouteImport } from './routes/api/public/register-tenant'
 import { Route as ApiPublicN8nCallbackRouteImport } from './routes/api/public/n8n-callback'
 import { Route as AuthenticatedAppUsuariosRouteImport } from './routes/_authenticated/app.usuarios'
+import { Route as AuthenticatedAppRelatoriosRouteImport } from './routes/_authenticated/app.relatorios'
 import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authenticated/app.documentos'
 import { Route as AuthenticatedAppDashboardRouteImport } from './routes/_authenticated/app.dashboard'
 import { Route as AuthenticatedAppConfiguracoesRouteImport } from './routes/_authenticated/app.configuracoes'
@@ -102,6 +103,12 @@ const AuthenticatedAppUsuariosRoute =
     path: '/usuarios',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppRelatoriosRoute =
+  AuthenticatedAppRelatoriosRouteImport.update({
+    id: '/relatorios',
+    path: '/relatorios',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppDocumentosRoute =
   AuthenticatedAppDocumentosRouteImport.update({
     id: '/documentos',
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
+  '/app/relatorios': typeof AuthenticatedAppRelatoriosRoute
   '/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/n8n-callback': typeof ApiPublicN8nCallbackRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
@@ -193,6 +201,7 @@ export interface FileRoutesByTo {
   '/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
+  '/app/relatorios': typeof AuthenticatedAppRelatoriosRoute
   '/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/n8n-callback': typeof ApiPublicN8nCallbackRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
@@ -218,6 +227,7 @@ export interface FileRoutesById {
   '/_authenticated/app/configuracoes': typeof AuthenticatedAppConfiguracoesRoute
   '/_authenticated/app/dashboard': typeof AuthenticatedAppDashboardRoute
   '/_authenticated/app/documentos': typeof AuthenticatedAppDocumentosRoute
+  '/_authenticated/app/relatorios': typeof AuthenticatedAppRelatoriosRoute
   '/_authenticated/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/n8n-callback': typeof ApiPublicN8nCallbackRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/app/configuracoes'
     | '/app/dashboard'
     | '/app/documentos'
+    | '/app/relatorios'
     | '/app/usuarios'
     | '/api/public/n8n-callback'
     | '/api/public/register-tenant'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/app/configuracoes'
     | '/app/dashboard'
     | '/app/documentos'
+    | '/app/relatorios'
     | '/app/usuarios'
     | '/api/public/n8n-callback'
     | '/api/public/register-tenant'
@@ -290,6 +302,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/configuracoes'
     | '/_authenticated/app/dashboard'
     | '/_authenticated/app/documentos'
+    | '/_authenticated/app/relatorios'
     | '/_authenticated/app/usuarios'
     | '/api/public/n8n-callback'
     | '/api/public/register-tenant'
@@ -408,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppUsuariosRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/relatorios': {
+      id: '/_authenticated/app/relatorios'
+      path: '/relatorios'
+      fullPath: '/app/relatorios'
+      preLoaderRoute: typeof AuthenticatedAppRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/documentos': {
       id: '/_authenticated/app/documentos'
       path: '/documentos'
@@ -487,6 +507,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppConfiguracoesRoute: typeof AuthenticatedAppConfiguracoesRoute
   AuthenticatedAppDashboardRoute: typeof AuthenticatedAppDashboardRoute
   AuthenticatedAppDocumentosRoute: typeof AuthenticatedAppDocumentosRoute
+  AuthenticatedAppRelatoriosRoute: typeof AuthenticatedAppRelatoriosRoute
   AuthenticatedAppUsuariosRoute: typeof AuthenticatedAppUsuariosRoute
 }
 
@@ -497,6 +518,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppConfiguracoesRoute: AuthenticatedAppConfiguracoesRoute,
   AuthenticatedAppDashboardRoute: AuthenticatedAppDashboardRoute,
   AuthenticatedAppDocumentosRoute: AuthenticatedAppDocumentosRoute,
+  AuthenticatedAppRelatoriosRoute: AuthenticatedAppRelatoriosRoute,
   AuthenticatedAppUsuariosRoute: AuthenticatedAppUsuariosRoute,
 }
 
