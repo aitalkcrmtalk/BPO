@@ -9,14 +9,15 @@ function AdminDashboard() {
   const fn = useServerFn(adminStats);
   const { data } = useQuery({ queryKey: ["admin-stats"], queryFn: () => fn() });
   const stats = [
-    { label: "Aprovações pendentes", value: data?.pending ?? 0 },
-    { label: "Tenants ativos", value: data?.approved ?? 0 },
-    { label: "Rejeitados", value: data?.rejected ?? 0 },
+    { label: "Empresas ativas", value: data?.empresasAtivas ?? 0 },
+    { label: "Empresas inativas", value: data?.empresasInativas ?? 0 },
+    { label: "Perfis", value: data?.totalPerfis ?? 0 },
+    { label: "Documentos", value: data?.totalDocumentos ?? 0 },
   ];
   return (
     <div>
       <h1 className="text-2xl font-bold">Painel Super Admin</h1>
-      <div className="mt-6 grid gap-4 md:grid-cols-3">
+      <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="text-sm text-muted-foreground">{s.label}</div>

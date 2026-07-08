@@ -1,4 +1,4 @@
-import type { PlanTier } from "@/types/database";
+export type PlanTier = "free" | "starter" | "pro" | "enterprise";
 
 export interface PlanDefinition {
   tier: PlanTier;

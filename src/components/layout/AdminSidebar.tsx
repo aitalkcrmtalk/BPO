@@ -1,12 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { LayoutDashboard, ClipboardCheck, Building2, ScrollText } from "lucide-react";
+import { LayoutDashboard, Building2 } from "lucide-react";
 import logoAsset from "@/assets/crm-talk-logo.png.asset.json";
 
 const items = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/admin/aprovacoes", label: "Aprovações", icon: ClipboardCheck },
-  { to: "/admin/tenants", label: "Tenants", icon: Building2 },
-  { to: "/admin/audit-logs", label: "Audit Logs", icon: ScrollText },
+  { to: "/admin/empresas", label: "Empresas", icon: Building2 },
 ] as const;
 
 export function AdminSidebar() {

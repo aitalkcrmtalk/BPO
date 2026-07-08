@@ -11,7 +11,7 @@ function DashboardPage() {
     <div>
       <h1 className="text-2xl font-bold">Dashboard</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Bem-vindo{data?.tenant ? `, ${data.tenant.name}` : ""}.
+        Bem-vindo{data?.empresa ? `, ${data.empresa.nome}` : ""}.
       </p>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {["Documentos processados", "Automações ativas", "Clientes"].map((label) => (
