@@ -15,13 +15,20 @@ export function StatusBadge({ label, variant = "muted", className }: { label: st
   return <Badge variant="outline" className={cn(styles[variant], className)}>{label}</Badge>;
 }
 
-export function tenantStatusVariant(status: string): Variant {
-  return status === "approved" ? "success" : status === "pending" ? "warning" : status === "rejected" ? "destructive" : "muted";
+export function empresaAtivaVariant(ativo: boolean): Variant {
+  return ativo ? "success" : "muted";
 }
 
 export function subscriptionVariant(status: string): Variant {
-  if (status === "active" || status === "trialing") return "success";
-  if (status === "past_due" || status === "incomplete") return "warning";
-  if (status === "canceled") return "destructive";
+  if (status === "ativa" || status === "trial") return "success";
+  if (status === "atrasada" || status === "incompleta") return "warning";
+  if (status === "cancelada") return "destructive";
   return "muted";
+}
+
+export function documentoStatusVariant(status: string): Variant {
+  if (status === "processado") return "success";
+  if (status === "processando") return "info";
+  if (status === "erro") return "destructive";
+  return "warning";
 }
