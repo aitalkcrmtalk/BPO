@@ -1,80 +1,61 @@
-## Situação atual
+## Fase 3 — Escopo aprovado
 
-A base do Supabase usa nomes 100% em pt-BR e é bem diferente do schema que o Lovable estava assumindo. Todo o código de tipos, hooks, server functions, guards, telas admin e telas do app referencia tabelas/enums que **não existem** (`tenants`, `tenant_users`, `subscriptions`, `internal_approvals`, `audit_logs`, enums `tenant_status`, `plan_tier`, funções `has_role`, `is_tenant_member`, `tenant_role`).
+4 blocos: (A) Gestão de usuários/convites, (B) Automações n8n, (C) Relatórios financeiros, (D) Admin da plataforma.
 
-### Schema real (resumo)
+### A. Gestão de usuários/convites da empresa
 
-| Tabela | Papel na app |
-|---|---|
-| `empresas` | Tenant (id, nome, razao_social, cnpj, ativo) |
-| `perfis` | Vínculo usuario↔empresa + papel (`usuario_id`, `empresa_id`, `nome`, `email`, `papel` text: `usuario`/`admin`/…) |
-| `user_roles` | Papel global de plataforma (`role` text: `super_admin`) |
-| `clientes` | Clientes da empresa (com `url_pasta_drive`) |
-| `documentos` | Documentos (empresa_id, cliente_id, titulo, status text, metadados jsonb, url_arquivo) |
-| `modulos` / `assinaturas` / `itens_assinatura` | Planos por módulo (chave, ativo, valor_base, status text) |
-| `usuarios_clientes` | Restringe perfis a subconjunto de clientes |
+Rota `/app/usuarios` (hoje só lista) vira CRUD completo:
+- **Convidar** — modal com email + papel (`admin`/`usuario`) + clientes permitidos (multi-select de `clientes` da empresa). Server fn `convidarUsuario` usa `supabaseAdmin.auth.admin.inviteUserByEmail` com `redirectTo` para `/auth/callback`, cria `perfis` (empresa_id + papel) e insere linhas em `usuarios_clientes` quando papel = `usuario`.
+- **Editar papel** e **gerenciar clientes vinculados** (add/remove em `usuarios_clientes`).
+- **Desativar** perfil (`perfis.ativo=false`) — sem deletar de `auth.users`.
+- Guard: só `admin` da empresa (ou `super_admin`) enxerga a página.
 
-**Sem enums.** Todos os status são `text`. **Sem trigger `handle_new_user`** — existe `criar_perfil_automatico` no Postgres.
+### B. Automações n8n (webhook out + callback in)
 
-**RLS:** só 2 políticas ativas hoje (`empresas` visível pelo próprio perfil; `user_roles` FOR ALL restrito a super_admin — essa **tem recursão infinita**, precisa virar `SECURITY DEFINER`). As demais tabelas têm RLS habilitado mas **sem policies** → hoje retornam vazio para tudo.
+Nova tabela `webhooks_empresa` (`empresa_id`, `url`, `secret`, `ativo`, `eventos text[]`).
+- Rota `/app/automacoes` (reativada): CRUD do webhook + botão "testar" (dispara payload dummy).
+- Server fn `dispararWebhookDocumento` chamada dentro de `upsertDocumento` quando webhook está ativo — POST com HMAC-SHA256 do body no header `x-signature`. Envio "fire-and-forget" (não bloqueia UI se n8n cair).
+- Endpoint público `src/routes/api/public/n8n-callback.ts` (POST): valida HMAC com o secret da empresa (empresa_id vem no payload), aceita `{ documento_id, status, metadados, valor, data_emissao, data_vencimento, emissor_documento }` e faz UPDATE via `supabaseAdmin`. Idempotente.
+- Segredo global `N8N_CALLBACK_SIGNING_KEY` gerado via `generate_secret` (usado como fallback caso a empresa não tenha secret próprio).
 
-## Fase 1.5 — Alinhar Lovable ao schema real (obrigatório antes da Fase 2)
+### C. Relatórios e dashboards financeiros
 
-### 1. Reescrever `src/types/database.ts`
-Substituir tudo pelas tabelas reais em pt-BR: `empresas`, `perfis`, `user_roles`, `clientes`, `documentos`, `modulos`, `assinaturas`, `itens_assinatura`, `usuarios_clientes`. Sem enums (union types TS onde fizer sentido).
+Nova rota `/app/relatorios`:
+- KPIs do mês corrente: total a receber (soma `valor` onde `tipo=nota_fiscal`/`comprovante`), a pagar (`boleto`/`contrato`), atrasados (data_vencimento < hoje AND status ≠ `concluido`).
+- Gráfico barras por mês (últimos 6) e por tipo — `recharts` (já instalado).
+- Filtros: período (mês/trimestre/ano), cliente, tipo.
+- Exportação CSV client-side (blob download).
+- Server fn `getRelatorioFinanceiro` agrega no Postgres (SUM/GROUP BY) para não trafegar linhas.
 
-### 2. Reescrever `src/types/index.ts` e `TenantContext`
-Renomear conceito: `Tenant` → `Empresa`, `TenantUser` → `Perfil`. `TenantContext` passa a expor `empresa`, `perfil`, `papel`, `assinatura`, `modulosAtivos`, `isSuperAdmin`.
+### D. Admin da plataforma (super_admin)
 
-### 3. Reescrever `src/lib/tenant.functions.ts` (renomear para `empresa.functions.ts`)
-- `getMyEmpresaContext`: lê `perfis` por `usuario_id = auth.uid()`, junta `empresas`, `assinaturas` + `itens_assinatura` + `modulos` ativos.
-- Remover `completeOnboarding` (não existe `onboarded_at`/`segment`/`size`).
-- Ajustar `useTenantContext` → `useEmpresaContext`.
+Expandir `/admin/dashboard` + nova rota `/admin/planos`:
+- Dashboard: total empresas ativas/inativas, total perfis, total documentos (últimos 30d), MRR estimado (SUM `itens_assinatura.valor_base` onde `assinaturas.status=ativa`).
+- `/admin/planos`: CRUD de `modulos` (chave, nome, valor_base, ativo).
+- Em `/admin/empresas`: botão "gerenciar assinatura" abre modal para ativar/suspender `assinaturas` e adicionar/remover `itens_assinatura` (módulos contratados).
 
-### 4. Reescrever `src/lib/admin.functions.ts` e telas admin
-Como não existe `tenants` nem `internal_approvals` nem `audit_logs`:
-- `/admin/dashboard`: lista `empresas` (ativo/inativo), contagem de perfis e documentos.
-- `/admin/tenants` → `/admin/empresas`: CRUD de `empresas` + toggle `ativo`.
-- **Remover** rotas `/admin/aprovacoes` e `/admin/audit-logs` (sem tabela) e seus links no `AdminSidebar`.
+### Migração SQL (você aplica manualmente)
 
-### 5. Ajustar guards de super_admin
-`user_roles.role` é `text`. Trocar checagem por `.eq('role','super_admin')` via **função SECURITY DEFINER** (ver item 8) — nunca ler a tabela direto no `beforeLoad` do admin (evita depender de RLS recursiva).
+Um único bloco idempotente `docs/migration_fase_3.sql`:
+1. `webhooks_empresa` (tabela + índice + RLS escopado por empresa + GRANT authenticated/service_role).
+2. Colunas: `perfis.ativo boolean default true`, `assinaturas.status` check (`ativa`/`suspensa`/`cancelada`).
+3. Índices: `documentos(empresa_id, data_vencimento)` e `documentos(empresa_id, tipo, status)` para relatórios.
+4. Função `public.agregar_financeiro(_empresa_id uuid, _inicio date, _fim date)` SECURITY DEFINER para o relatório.
 
-### 6. Ajustar telas do app
-- `/app/dashboard`: contagens de `clientes`, `documentos` da `empresa` do usuário.
-- `/app/clientes`: CRUD de `clientes` (nome, cnpj, url_pasta_drive).
-- `/app/usuarios`: gestão de `perfis` da empresa + vínculo `usuarios_clientes`.
-- `/app/documentos`: preparado para Fase 2 (upload/IA).
-- `/app/assinatura`: mostra `assinaturas` + `modulos` ativos via `itens_assinatura`.
-- **Remover** `/app/onboarding` (não há campos correspondentes) e `/app/automacoes` (ou deixar como placeholder Fase 2).
+### Ordem de implementação
 
-### 7. Ajustar cadastro público
-`src/routes/api/public/register-tenant.ts` → cria `empresas` + `perfis` (papel `admin`) + convite via `supabaseAdmin.auth.admin.inviteUserByEmail`. Ajustar `cadastro.tsx` para os campos reais (nome empresa, cnpj, nome/email do responsável).
+1. Migração SQL (você aplica) → aviso "aplicado" antes de eu prosseguir com as partes que dependem dela (B e D principalmente).
+2. Bloco A (não depende de nada novo além de `perfis.ativo`).
+3. Bloco C (depende só de índices).
+4. Bloco B (depende de `webhooks_empresa` + secret).
+5. Bloco D (depende de checks em `assinaturas`).
 
-### 8. Migration SQL para o usuário aplicar no Supabase
-Um único bloco com:
-- Função `public.has_platform_role(_user_id uuid, _role text) RETURNS boolean SECURITY DEFINER` (quebra recursão de `user_roles`).
-- Função `public.get_empresa_do_usuario(_user_id uuid) RETURNS uuid SECURITY DEFINER` (retorna `perfis.empresa_id`).
-- Função `public.tem_papel_empresa(_user_id uuid, _empresa_id uuid, _papel text) RETURNS boolean SECURITY DEFINER`.
-- **Recriar** política `user_roles_*` usando `has_platform_role` (sem recursão).
-- Adicionar políticas RLS faltantes em: `perfis`, `clientes`, `documentos`, `assinaturas`, `itens_assinatura`, `modulos`, `usuarios_clientes` (SELECT/INSERT/UPDATE/DELETE escopados por `empresa_id = get_empresa_do_usuario(auth.uid())` OU `has_platform_role(auth.uid(),'super_admin')`).
-- `GRANT` nas tabelas para `authenticated` e `service_role`.
-- Inserir super_admin `aitalk@crmtalk.com.br`.
+### Detalhes técnicos
 
-## Fase 2 (depois da 1.5)
+- **HMAC**: `crypto.createHmac('sha256', secret).update(rawBody).digest('hex')`, comparação com `timingSafeEqual`.
+- **Convites**: `inviteUserByEmail` requer `supabaseAdmin`; feito dentro de handler autorizado (`requireSupabaseAuth` + check `admin` da empresa).
+- **Callback público**: `/api/public/n8n-callback` bypassa auth do site publicado, então HMAC é obrigatório.
+- **CSV**: gerado no cliente com `Blob` + `URL.createObjectURL` — sem dependência nova.
+- **Nenhuma dependência npm nova** (já temos `recharts`, `zod`, `@supabase/supabase-js`).
 
-Upload + Storage + IA (OpenAI via Lovable AI Gateway) + n8n + UI documentos.
-
-## Detalhes técnicos
-
-- Cliente Supabase continua igual (`CLIENT_SUPABASE_*`).
-- Todos os `.eq('user_id', ...)` viram `.eq('usuario_id', ...)` onde apropriado.
-- Nome do storage key do auth mantém.
-- Colunas `criado_em`/`atualizado_em` em vez de `created_at`/`updated_at` em quase tudo (exceto `user_roles` que usa `created_at`).
-- `documentos.status` é text livre — vou padronizar em `'pendente' | 'processando' | 'processado' | 'erro'` no TS.
-
-## O que peço para você
-
-1. Confirmar se posso **remover** `/admin/aprovacoes`, `/admin/audit-logs` e `/app/onboarding` (não há tabela correspondente).
-2. Confirmar se `perfis.papel` só tem `usuario` e `admin`, ou existem outros valores (`operador`, `visualizador`)?
-3. A migration SQL da Fase 1.5 (item 8) você aplica manualmente no Supabase, certo?
+Confirma que posso seguir nessa ordem?
