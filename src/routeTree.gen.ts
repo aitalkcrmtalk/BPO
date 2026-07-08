@@ -30,6 +30,7 @@ import { Route as AuthenticatedAppConfiguracoesRouteImport } from './routes/_aut
 import { Route as AuthenticatedAppClientesRouteImport } from './routes/_authenticated/app.clientes'
 import { Route as AuthenticatedAppAutomacoesRouteImport } from './routes/_authenticated/app.automacoes'
 import { Route as AuthenticatedAppAssinaturaRouteImport } from './routes/_authenticated/app.assinatura'
+import { Route as AuthenticatedAdminPlanosRouteImport } from './routes/_authenticated/admin.planos'
 import { Route as AuthenticatedAdminEmpresasRouteImport } from './routes/_authenticated/admin.empresas'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
 
@@ -145,6 +146,12 @@ const AuthenticatedAppAssinaturaRoute =
     path: '/assinatura',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAdminPlanosRoute =
+  AuthenticatedAdminPlanosRouteImport.update({
+    id: '/planos',
+    path: '/planos',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminEmpresasRoute =
   AuthenticatedAdminEmpresasRouteImport.update({
     id: '/empresas',
@@ -171,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
+  '/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
   '/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
@@ -195,6 +203,7 @@ export interface FileRoutesByTo {
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
+  '/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
   '/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/app/clientes': typeof AuthenticatedAppClientesRoute
@@ -221,6 +230,7 @@ export interface FileRoutesById {
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
+  '/_authenticated/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/_authenticated/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
   '/_authenticated/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
   '/_authenticated/app/clientes': typeof AuthenticatedAppClientesRoute
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/cadastro/aguardando'
     | '/admin/dashboard'
     | '/admin/empresas'
+    | '/admin/planos'
     | '/app/assinatura'
     | '/app/automacoes'
     | '/app/clientes'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/cadastro/aguardando'
     | '/admin/dashboard'
     | '/admin/empresas'
+    | '/admin/planos'
     | '/app/assinatura'
     | '/app/automacoes'
     | '/app/clientes'
@@ -296,6 +308,7 @@ export interface FileRouteTypes {
     | '/cadastro/aguardando'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/empresas'
+    | '/_authenticated/admin/planos'
     | '/_authenticated/app/assinatura'
     | '/_authenticated/app/automacoes'
     | '/_authenticated/app/clientes'
@@ -470,6 +483,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppAssinaturaRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/admin/planos': {
+      id: '/_authenticated/admin/planos'
+      path: '/planos'
+      fullPath: '/admin/planos'
+      preLoaderRoute: typeof AuthenticatedAdminPlanosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/empresas': {
       id: '/_authenticated/admin/empresas'
       path: '/empresas'
@@ -490,11 +510,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminEmpresasRoute: typeof AuthenticatedAdminEmpresasRoute
+  AuthenticatedAdminPlanosRoute: typeof AuthenticatedAdminPlanosRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminEmpresasRoute: AuthenticatedAdminEmpresasRoute,
+  AuthenticatedAdminPlanosRoute: AuthenticatedAdminPlanosRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =
