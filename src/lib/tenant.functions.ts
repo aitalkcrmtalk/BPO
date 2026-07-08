@@ -1,34 +1,40 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { TenantContext } from "@/types";
+import type { Subscription, Tenant, TenantContext } from "@/types";
+import type { TenantRole } from "@/types/database";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyClient = any;
 
 export const getMyTenantContext = createServerFn({ method: "GET" })
+  .handler(async (): Promise<TenantContext> => {
+    // Wrapper delegates to protected impl via middleware — we can't attach
+    // middleware conditionally, so use the middleware variant below directly.
+    throw new Error("Use getMyTenantContextAuthed");
+  });
+
+export const getMyTenantContextAuthed = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<TenantContext> => {
-    const { supabase, userId } = context;
+    const supabase = context.supabase as AnyClient;
+    const userId = context.userId as string;
 
-    const [{ data: memberships }, { data: roles }] = await Promise.all([
-      supabase
-        .from("tenant_users")
-        .select("tenant_id, role, tenants:tenant_id ( id, name, slug, status, plan, onboarded_at )")
-        .eq("user_id", userId),
+    const [membershipsRes, rolesRes] = await Promise.all([
+      supabase.from("tenant_users").select("tenant_id, role").eq("user_id", userId),
       supabase.from("user_roles").select("role").eq("user_id", userId),
     ]);
 
-    const isSuperAdmin = (roles ?? []).some((r) => r.role === "super_admin");
-    const list = (memberships ?? []).map((m) => {
-      const t = m.tenants as unknown as { id: string; name: string; slug: string; status: TenantContext["status"] };
-      return { id: t.id, name: t.name, slug: t.slug, status: t.status };
-    });
+    const memberships = (membershipsRes.data ?? []) as Array<{ tenant_id: string; role: TenantRole }>;
+    const roles = (rolesRes.data ?? []) as Array<{ role: string }>;
+    const isSuperAdmin = roles.some((r) => r.role === "super_admin");
 
-    const active = memberships?.[0];
-    if (!active) {
+    if (memberships.length === 0) {
       return {
         tenant: null,
         role: null,
         subscription: null,
-        tenants: list,
+        tenants: [],
         isSuperAdmin,
         status: null,
         subscriptionStatus: null,
@@ -36,24 +42,27 @@ export const getMyTenantContext = createServerFn({ method: "GET" })
       };
     }
 
-    const { data: tenant } = await supabase
-      .from("tenants")
-      .select("*")
-      .eq("id", active.tenant_id)
-      .maybeSingle();
-    const { data: subscription } = await supabase
+    const tenantIds = memberships.map((m) => m.tenant_id);
+    const tenantsRes = await supabase.from("tenants").select("*").in("id", tenantIds);
+    const tenants = (tenantsRes.data ?? []) as Tenant[];
+
+    const active = memberships[0];
+    const tenant = tenants.find((t) => t.id === active.tenant_id) ?? null;
+
+    const subRes = await supabase
       .from("subscriptions")
       .select("*")
       .eq("tenant_id", active.tenant_id)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
+    const subscription = (subRes.data ?? null) as Subscription | null;
 
     return {
       tenant,
       role: active.role,
       subscription,
-      tenants: list,
+      tenants: tenants.map((t) => ({ id: t.id, name: t.name, slug: t.slug, status: t.status })),
       isSuperAdmin,
       status: tenant?.status ?? null,
       subscriptionStatus: subscription?.status ?? null,
@@ -73,7 +82,8 @@ export const completeOnboarding = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    const supabase = context.supabase as AnyClient;
+    const { error } = await supabase
       .from("tenants")
       .update({ segment: data.segment, size: data.size, onboarded_at: new Date().toISOString() })
       .eq("id", data.tenant_id);
