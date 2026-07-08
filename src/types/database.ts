@@ -41,6 +41,7 @@ export interface Database {
           email: string;
           papel: PapelPerfil | string;
           criado_em: string;
+          ativo: boolean;
         };
         Insert: {
           id?: string;
@@ -50,6 +51,7 @@ export interface Database {
           email: string;
           papel?: PapelPerfil | string;
           criado_em?: string;
+          ativo?: boolean;
         };
         Update: Partial<Database["public"]["Tables"]["perfis"]["Insert"]>;
       };
@@ -135,6 +137,7 @@ export interface Database {
           nome: string;
           ativo: boolean;
           criado_em: string;
+          valor_base: number;
         };
         Insert: {
           id?: string;
@@ -142,6 +145,7 @@ export interface Database {
           nome: string;
           ativo?: boolean;
           criado_em?: string;
+          valor_base?: number;
         };
         Update: Partial<Database["public"]["Tables"]["modulos"]["Insert"]>;
       };
@@ -194,11 +198,38 @@ export interface Database {
         };
         Update: Partial<Database["public"]["Tables"]["usuarios_clientes"]["Insert"]>;
       };
+      webhooks_empresa: {
+        Row: {
+          id: string;
+          empresa_id: string;
+          url: string;
+          secret: string;
+          ativo: boolean;
+          eventos: string[];
+          criado_em: string;
+          atualizado_em: string;
+        };
+        Insert: {
+          id?: string;
+          empresa_id: string;
+          url: string;
+          secret: string;
+          ativo?: boolean;
+          eventos?: string[];
+          criado_em?: string;
+          atualizado_em?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["webhooks_empresa"]["Insert"]>;
+      };
     };
     Views: Record<string, never>;
     Functions: {
       has_platform_role: { Args: { _user_id: string; _role: string }; Returns: boolean };
       get_empresa_do_usuario: { Args: { _user_id: string }; Returns: string };
+      agregar_financeiro: {
+        Args: { _empresa_id: string; _inicio: string; _fim: string };
+        Returns: { tipo: string; status: string; total_valor: number; quantidade: number }[];
+      };
     };
     Enums: Record<string, never>;
   };
