@@ -101,6 +101,13 @@ export interface Database {
           metadados: Json;
           url_arquivo: string | null;
           criado_em: string;
+          tipo: string;
+          valor: number | null;
+          data_emissao: string | null;
+          data_vencimento: string | null;
+          emissor_documento: string | null;
+          observacoes: string | null;
+          atualizado_em: string;
         };
         Insert: {
           id?: string;
@@ -111,6 +118,13 @@ export interface Database {
           metadados?: Json;
           url_arquivo?: string | null;
           criado_em?: string;
+          tipo?: string;
+          valor?: number | null;
+          data_emissao?: string | null;
+          data_vencimento?: string | null;
+          emissor_documento?: string | null;
+          observacoes?: string | null;
+          atualizado_em?: string;
         };
         Update: Partial<Database["public"]["Tables"]["documentos"]["Insert"]>;
       };
