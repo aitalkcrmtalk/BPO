@@ -109,10 +109,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Injeta config pública do Supabase (URL + anon key) para o browser client.
+  // process.env está disponível durante o SSR (Worker runtime).
+  const cfg = {
+    url: (typeof process !== "undefined" && process.env?.CLIENT_SUPABASE_URL) || "",
+    anonKey: (typeof process !== "undefined" && process.env?.CLIENT_SUPABASE_ANON_KEY) || "",
+  };
+  const cfgScript = `window.__SUPABASE_CFG__=${JSON.stringify(cfg)};`;
   return (
     <html lang="pt-BR">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: cfgScript }} />
       </head>
       <body>
         {children}
