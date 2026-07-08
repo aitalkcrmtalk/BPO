@@ -28,7 +28,7 @@ function LoginPage() {
     const meta = data.user.user_metadata as { must_change_password?: boolean } | undefined;
     if (meta?.must_change_password) return navigate({ to: "/primeiro-acesso" });
     const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
-    const isAdmin = (roles ?? []).some((r) => r.role === "super_admin");
+    const isAdmin = ((roles ?? []) as Array<{ role: string }>).some((r) => r.role === "super_admin");
     navigate({ to: isAdmin ? "/admin/dashboard" : "/app/dashboard" });
   }
 

@@ -9,38 +9,187 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
+import { Route as PrimeiroAcessoRouteImport } from './routes/primeiro-acesso'
+import { Route as PlanosRouteImport } from './routes/planos'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CadastroAguardandoRouteImport } from './routes/cadastro.aguardando'
+import { Route as ApiPublicRegisterTenantRouteImport } from './routes/api/public/register-tenant'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
+  id: '/recuperar-senha',
+  path: '/recuperar-senha',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrimeiroAcessoRoute = PrimeiroAcessoRouteImport.update({
+  id: '/primeiro-acesso',
+  path: '/primeiro-acesso',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlanosRoute = PlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CadastroRoute = CadastroRouteImport.update({
+  id: '/cadastro',
+  path: '/cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CadastroAguardandoRoute = CadastroAguardandoRouteImport.update({
+  id: '/aguardando',
+  path: '/aguardando',
+  getParentRoute: () => CadastroRoute,
+} as any)
+const ApiPublicRegisterTenantRoute = ApiPublicRegisterTenantRouteImport.update({
+  id: '/api/public/register-tenant',
+  path: '/api/public/register-tenant',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRouteWithChildren
+  '/login': typeof LoginRoute
+  '/planos': typeof PlanosRoute
+  '/primeiro-acesso': typeof PrimeiroAcessoRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/cadastro/aguardando': typeof CadastroAguardandoRoute
+  '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRouteWithChildren
+  '/login': typeof LoginRoute
+  '/planos': typeof PlanosRoute
+  '/primeiro-acesso': typeof PrimeiroAcessoRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/cadastro/aguardando': typeof CadastroAguardandoRoute
+  '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRouteWithChildren
+  '/login': typeof LoginRoute
+  '/planos': typeof PlanosRoute
+  '/primeiro-acesso': typeof PrimeiroAcessoRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/cadastro/aguardando': typeof CadastroAguardandoRoute
+  '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/cadastro'
+    | '/login'
+    | '/planos'
+    | '/primeiro-acesso'
+    | '/recuperar-senha'
+    | '/reset-password'
+    | '/cadastro/aguardando'
+    | '/api/public/register-tenant'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/cadastro'
+    | '/login'
+    | '/planos'
+    | '/primeiro-acesso'
+    | '/recuperar-senha'
+    | '/reset-password'
+    | '/cadastro/aguardando'
+    | '/api/public/register-tenant'
+  id:
+    | '__root__'
+    | '/'
+    | '/cadastro'
+    | '/login'
+    | '/planos'
+    | '/primeiro-acesso'
+    | '/recuperar-senha'
+    | '/reset-password'
+    | '/cadastro/aguardando'
+    | '/api/public/register-tenant'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CadastroRoute: typeof CadastroRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  PlanosRoute: typeof PlanosRoute
+  PrimeiroAcessoRoute: typeof PrimeiroAcessoRoute
+  RecuperarSenhaRoute: typeof RecuperarSenhaRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicRegisterTenantRoute: typeof ApiPublicRegisterTenantRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recuperar-senha': {
+      id: '/recuperar-senha'
+      path: '/recuperar-senha'
+      fullPath: '/recuperar-senha'
+      preLoaderRoute: typeof RecuperarSenhaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/primeiro-acesso': {
+      id: '/primeiro-acesso'
+      path: '/primeiro-acesso'
+      fullPath: '/primeiro-acesso'
+      preLoaderRoute: typeof PrimeiroAcessoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/planos': {
+      id: '/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof PlanosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cadastro': {
+      id: '/cadastro'
+      path: '/cadastro'
+      fullPath: '/cadastro'
+      preLoaderRoute: typeof CadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +197,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cadastro/aguardando': {
+      id: '/cadastro/aguardando'
+      path: '/aguardando'
+      fullPath: '/cadastro/aguardando'
+      preLoaderRoute: typeof CadastroAguardandoRouteImport
+      parentRoute: typeof CadastroRoute
+    }
+    '/api/public/register-tenant': {
+      id: '/api/public/register-tenant'
+      path: '/api/public/register-tenant'
+      fullPath: '/api/public/register-tenant'
+      preLoaderRoute: typeof ApiPublicRegisterTenantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface CadastroRouteChildren {
+  CadastroAguardandoRoute: typeof CadastroAguardandoRoute
+}
+
+const CadastroRouteChildren: CadastroRouteChildren = {
+  CadastroAguardandoRoute: CadastroAguardandoRoute,
+}
+
+const CadastroRouteWithChildren = CadastroRoute._addFileChildren(
+  CadastroRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CadastroRoute: CadastroRouteWithChildren,
+  LoginRoute: LoginRoute,
+  PlanosRoute: PlanosRoute,
+  PrimeiroAcessoRoute: PrimeiroAcessoRoute,
+  RecuperarSenhaRoute: RecuperarSenhaRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicRegisterTenantRoute: ApiPublicRegisterTenantRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
