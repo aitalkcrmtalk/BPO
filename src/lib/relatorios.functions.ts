@@ -27,29 +27,35 @@ export const getRelatorioFinanceiro = createServerFn({ method: "POST" })
     if (!empresaId) return { kpis: null, porTipo: [], porMes: [], atrasados: [] };
 
     const { data: agg, error } = await supabase.rpc("agregar_financeiro", {
-      _empresa_id: empresaId,
-      _inicio: data.inicio,
-      _fim: data.fim,
+      p_empresa_id: empresaId,
+      p_data_inicio: data.inicio,
+      p_data_fim: data.fim,
     });
     if (error) throw new Error(error.message);
 
-    const rows = (agg ?? []) as Array<{
-      tipo: string;
-      status: string;
-      total_valor: number;
-      quantidade: number;
-    }>;
+    // agregar_financeiro retorna JSON: { total_documentos, total_valor,
+    //   por_status:[{status,quantidade,valor_total}], por_tipo:[{tipo,...}],
+    //   mrr_estimado, documentos_30d }
+    const payload = (agg ?? {}) as {
+      total_valor?: number;
+      por_status?: Array<{ status: string; quantidade: number; valor_total: number }>;
+      por_tipo?: Array<{ tipo: string; quantidade: number; valor_total: number }>;
+      mrr_estimado?: number;
+      documentos_30d?: number;
+    };
 
     let aReceber = 0;
     let aPagar = 0;
     let concluidos = 0;
     const porTipo: Record<string, number> = {};
-    for (const r of rows) {
-      const v = Number(r.total_valor ?? 0);
+    for (const r of payload.por_tipo ?? []) {
+      const v = Number(r.valor_total ?? 0);
       porTipo[r.tipo] = (porTipo[r.tipo] ?? 0) + v;
-      if (r.status === "concluido") concluidos += v;
       if (TIPOS_RECEBER.includes(r.tipo)) aReceber += v;
       if (TIPOS_PAGAR.includes(r.tipo)) aPagar += v;
+    }
+    for (const s of payload.por_status ?? []) {
+      if (s.status === "concluido") concluidos += Number(s.valor_total ?? 0);
     }
 
     // Documentos atrasados (top 20)

@@ -227,8 +227,15 @@ export interface Database {
       has_platform_role: { Args: { _user_id: string; _role: string }; Returns: boolean };
       get_empresa_do_usuario: { Args: { _user_id: string }; Returns: string };
       agregar_financeiro: {
-        Args: { _empresa_id: string; _inicio: string; _fim: string };
-        Returns: { tipo: string; status: string; total_valor: number; quantidade: number }[];
+        Args: { p_empresa_id: string; p_data_inicio?: string | null; p_data_fim?: string | null };
+        Returns: {
+          total_documentos: number;
+          total_valor: number;
+          por_status: Array<{ status: string; quantidade: number; valor_total: number }>;
+          por_tipo: Array<{ tipo: string; quantidade: number; valor_total: number }>;
+          mrr_estimado: number;
+          documentos_30d: number;
+        };
       };
     };
     Enums: Record<string, never>;
