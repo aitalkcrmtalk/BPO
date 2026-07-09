@@ -1,61 +1,67 @@
-## Fase 3 — Escopo aprovado
+# Fase 3+: Workflow n8n "BPO Agent"
 
-4 blocos: (A) Gestão de usuários/convites, (B) Automações n8n, (C) Relatórios financeiros, (D) Admin da plataforma.
+Vou criar o workflow completo no seu n8n (projeto **BPO**), seguindo a arquitetura Lovable → n8n → OpenAI → Supabase que você descreveu, e integrá-lo aos webhooks/callback já existentes na Fase 3.
 
-### A. Gestão de usuários/convites da empresa
+## Arquitetura do workflow
 
-Rota `/app/usuarios` (hoje só lista) vira CRUD completo:
-- **Convidar** — modal com email + papel (`admin`/`usuario`) + clientes permitidos (multi-select de `clientes` da empresa). Server fn `convidarUsuario` usa `supabaseAdmin.auth.admin.inviteUserByEmail` com `redirectTo` para `/auth/callback`, cria `perfis` (empresa_id + papel) e insere linhas em `usuarios_clientes` quando papel = `usuario`.
-- **Editar papel** e **gerenciar clientes vinculados** (add/remove em `usuarios_clientes`).
-- **Desativar** perfil (`perfis.ativo=false`) — sem deletar de `auth.users`.
-- Guard: só `admin` da empresa (ou `super_admin`) enxerga a página.
+```text
+[Webhook POST /bpo-agent]
+       ↓
+[Verify HMAC signature]        ← usa o mesmo secret salvo em webhooks_empresa
+       ↓
+[Query Supabase]               ← RAG: busca documentos da empresa_id
+       ↓
+[AI Agent — gpt-4o]            ← com tools MCP-style
+   ├─ tool: search_documents   → Supabase SELECT
+   ├─ tool: update_document    → Supabase UPDATE
+   └─ tool: list_clientes      → Supabase SELECT
+       ↓
+[POST /api/public/n8n-callback] ← assinado HMAC-SHA256, atualiza documentos no app
+       ↓
+[Respond to Webhook]           ← devolve resultado ao Lovable
+```
 
-### B. Automações n8n (webhook out + callback in)
+## O que vou fazer
 
-Nova tabela `webhooks_empresa` (`empresa_id`, `url`, `secret`, `ativo`, `eventos text[]`).
-- Rota `/app/automacoes` (reativada): CRUD do webhook + botão "testar" (dispara payload dummy).
-- Server fn `dispararWebhookDocumento` chamada dentro de `upsertDocumento` quando webhook está ativo — POST com HMAC-SHA256 do body no header `x-signature`. Envio "fire-and-forget" (não bloqueia UI se n8n cair).
-- Endpoint público `src/routes/api/public/n8n-callback.ts` (POST): valida HMAC com o secret da empresa (empresa_id vem no payload), aceita `{ documento_id, status, metadados, valor, data_emissao, data_vencimento, emissor_documento }` e faz UPDATE via `supabaseAdmin`. Idempotente.
-- Segredo global `N8N_CALLBACK_SIGNING_KEY` gerado via `generate_secret` (usado como fallback caso a empresa não tenha secret próprio).
+### 1. n8n (projeto BPO)
+- `search_projects` → resolver o ID do projeto **BPO**
+- `list_credentials` → capturar IDs das credenciais **OpenAI** e **Supabase** já criadas
+- `get_workflow_best_practices` (technique: `chatbot` e `data_extraction`) para consolidar padrões
+- `get_node_types` para Webhook, Supabase, `@n8n/n8n-nodes-langchain.agent`, HTTP Request e Respond to Webhook
+- `validate_workflow` + `create_workflow_from_code` para criar o workflow "BPO Agent" no projeto BPO
+- Devolvo a URL do webhook para você configurar em `/app/automacoes`
 
-### C. Relatórios e dashboards financeiros
+### 2. Integração com o app Lovable (mudanças mínimas)
+- **Nenhuma mudança de schema.** O `webhooks_empresa` da Fase 3 já cobre URL + secret + eventos.
+- Confirmar que `/api/public/n8n-callback` aceita o payload que o agente retornar (já aceita: `status`, `valor`, `data_emissao`, `data_vencimento`, `emissor_documento`, `metadados`).
+- Opcional: adicionar em `src/routes/_authenticated/app.automacoes.tsx` uma nota curta explicando o formato esperado do payload do agente (dica para o usuário final).
 
-Nova rota `/app/relatorios`:
-- KPIs do mês corrente: total a receber (soma `valor` onde `tipo=nota_fiscal`/`comprovante`), a pagar (`boleto`/`contrato`), atrasados (data_vencimento < hoje AND status ≠ `concluido`).
-- Gráfico barras por mês (últimos 6) e por tipo — `recharts` (já instalado).
-- Filtros: período (mês/trimestre/ano), cliente, tipo.
-- Exportação CSV client-side (blob download).
-- Server fn `getRelatorioFinanceiro` agrega no Postgres (SUM/GROUP BY) para não trafegar linhas.
+### 3. Segurança
+- HMAC-SHA256 em ambos os sentidos (Lovable→n8n usa `dispatchWebhook`; n8n→Lovable usa `verifyHmac` já implementado).
+- OpenAI API Key fica só em credencial do n8n — nunca sai para Lovable/Supabase.
+- Supabase acessado pelo n8n com `service_role` (credencial do n8n), escopado por `empresa_id` no filtro de cada tool.
+- RLS do Supabase permanece ativo para acesso via app; n8n opera server-side.
 
-### D. Admin da plataforma (super_admin)
+## Detalhes técnicos
 
-Expandir `/admin/dashboard` + nova rota `/admin/planos`:
-- Dashboard: total empresas ativas/inativas, total perfis, total documentos (últimos 30d), MRR estimado (SUM `itens_assinatura.valor_base` onde `assinaturas.status=ativa`).
-- `/admin/planos`: CRUD de `modulos` (chave, nome, valor_base, ativo).
-- Em `/admin/empresas`: botão "gerenciar assinatura" abre modal para ativar/suspender `assinaturas` e adicionar/remover `itens_assinatura` (módulos contratados).
+**Tools do Agent (function calling nativo do gpt-4o):**
+| Tool | Ação Supabase | Params |
+|---|---|---|
+| `search_documents` | `SELECT * FROM documentos WHERE empresa_id=$1 AND (titulo ILIKE $2 OR tipo=$3)` | empresa_id, query, tipo? |
+| `update_document` | `UPDATE documentos SET status/valor/... WHERE id=$1 AND empresa_id=$2` | id, patch |
+| `list_clientes` | `SELECT id,nome,documento FROM clientes WHERE empresa_id=$1` | empresa_id |
 
-### Migração SQL (você aplica manualmente)
+**Payload que o Lovable envia ao webhook n8n:**
+```json
+{ "evento": "documento.criado", "empresa_id": "...", "documento_id": "...", "input": "texto opcional" }
+```
 
-Um único bloco idempotente `docs/migration_fase_3.sql`:
-1. `webhooks_empresa` (tabela + índice + RLS escopado por empresa + GRANT authenticated/service_role).
-2. Colunas: `perfis.ativo boolean default true`, `assinaturas.status` check (`ativa`/`suspensa`/`cancelada`).
-3. Índices: `documentos(empresa_id, data_vencimento)` e `documentos(empresa_id, tipo, status)` para relatórios.
-4. Função `public.agregar_financeiro(_empresa_id uuid, _inicio date, _fim date)` SECURITY DEFINER para o relatório.
+**Payload que o n8n devolve via callback:**
+Estrutura já esperada por `n8n-callback.ts` — atualiza o documento e retorna `{ ok: true }`.
 
-### Ordem de implementação
+## Fora de escopo (não farei agora)
+- Google Drive (você mencionou a credencial, mas não faz parte desta arquitetura RAG). Se quiser adicionar leitura de arquivos do Drive como fonte extra do RAG, me diga em uma próxima iteração.
+- Publicação/ativação do workflow — deixo criado como **draft**; você revisa e ativa manualmente no n8n.
+- Cadastro automático do URL do webhook em `webhooks_empresa` — você cola na tela `/app/automacoes` após eu devolver a URL.
 
-1. Migração SQL (você aplica) → aviso "aplicado" antes de eu prosseguir com as partes que dependem dela (B e D principalmente).
-2. Bloco A (não depende de nada novo além de `perfis.ativo`).
-3. Bloco C (depende só de índices).
-4. Bloco B (depende de `webhooks_empresa` + secret).
-5. Bloco D (depende de checks em `assinaturas`).
-
-### Detalhes técnicos
-
-- **HMAC**: `crypto.createHmac('sha256', secret).update(rawBody).digest('hex')`, comparação com `timingSafeEqual`.
-- **Convites**: `inviteUserByEmail` requer `supabaseAdmin`; feito dentro de handler autorizado (`requireSupabaseAuth` + check `admin` da empresa).
-- **Callback público**: `/api/public/n8n-callback` bypassa auth do site publicado, então HMAC é obrigatório.
-- **CSV**: gerado no cliente com `Blob` + `URL.createObjectURL` — sem dependência nova.
-- **Nenhuma dependência npm nova** (já temos `recharts`, `zod`, `@supabase/supabase-js`).
-
-Confirma que posso seguir nessa ordem?
+Ao final, você recebe: (1) URL do webhook n8n, (2) instruções para colar em `/app/automacoes`, (3) resumo do que o agente sabe fazer.
