@@ -22,6 +22,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StatusBadge, empresaAtivaVariant } from "@/components/StatusBadge";
+import { Link } from "@tanstack/react-router";
+import { Eye } from "lucide-react";
 import {
   listAllEmpresas,
   setEmpresaAtivo,
@@ -57,13 +59,24 @@ function Page() {
         {((data ?? []) as Empresa[]).map((e) => (
           <div key={e.id} className="flex items-center justify-between border-b px-6 py-4 last:border-b-0">
             <div>
-              <div className="font-semibold">{e.nome}</div>
+              <Link
+                to="/admin/empresas/$empresaId"
+                params={{ empresaId: e.id }}
+                className="font-semibold hover:underline"
+              >
+                {e.nome}
+              </Link>
               <div className="text-xs text-muted-foreground">
                 {e.razao_social ?? "—"} · CNPJ {e.cnpj ?? "—"}
               </div>
             </div>
             <div className="flex items-center gap-3">
               <StatusBadge label={e.ativo ? "ativa" : "inativa"} variant={empresaAtivaVariant(e.ativo)} />
+              <Button size="sm" variant="ghost" asChild>
+                <Link to="/admin/empresas/$empresaId" params={{ empresaId: e.id }}>
+                  <Eye className="mr-1 h-4 w-4" /> Ver perfil
+                </Link>
+              </Button>
               <Button size="sm" variant="outline" onClick={() => setAssinaturaOf(e)}>
                 Assinatura
               </Button>

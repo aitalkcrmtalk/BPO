@@ -20,7 +20,7 @@ export const listAllEmpresas = createServerFn({ method: "GET" })
     const { data, error } = await admin
       .from("empresas")
       .select("*")
-      .order("criado_em", { ascending: false });
+      .order("nome", { ascending: true });
     if (error) throw new Error(error.message);
     return data ?? [];
   });
@@ -227,4 +227,62 @@ export const toggleItemAssinatura = createServerFn({ method: "POST" })
     );
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+// ---------------------------------------------------------------------------
+// Perfil completo da empresa (super admin visualiza como se estivesse dentro)
+// ---------------------------------------------------------------------------
+export const getEmpresaDetalhes = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ empresa_id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const supabase = context.supabase as AnyClient;
+    await assertSuperAdmin(supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const admin = supabaseAdmin as AnyClient;
+
+    const desde30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const [empresaRes, assinaturaRes, usuariosRes, clientesCount, docsCount, docs30] =
+      await Promise.all([
+        admin.from("empresas").select("*").eq("id", data.empresa_id).maybeSingle(),
+        admin
+          .from("assinaturas")
+          .select("*, itens_assinatura(*, modulos(*))")
+          .eq("empresa_id", data.empresa_id)
+          .order("criado_em", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        admin
+          .from("perfis")
+          .select("id, nome, email, papel, ativo, criado_em")
+          .eq("empresa_id", data.empresa_id)
+          .order("nome", { ascending: true }),
+        admin
+          .from("clientes")
+          .select("id", { count: "exact", head: true })
+          .eq("empresa_id", data.empresa_id),
+        admin
+          .from("documentos")
+          .select("id", { count: "exact", head: true })
+          .eq("empresa_id", data.empresa_id),
+        admin
+          .from("documentos")
+          .select("id", { count: "exact", head: true })
+          .eq("empresa_id", data.empresa_id)
+          .gte("criado_em", desde30),
+      ]);
+
+    if (!empresaRes.data) throw new Response("Empresa não encontrada", { status: 404 });
+
+    return {
+      empresa: empresaRes.data,
+      assinatura: assinaturaRes.data ?? null,
+      usuarios: usuariosRes.data ?? [],
+      stats: {
+        totalUsuarios: (usuariosRes.data ?? []).length,
+        totalClientes: clientesCount.count ?? 0,
+        totalDocumentos: docsCount.count ?? 0,
+        documentos30d: docs30.count ?? 0,
+      },
+    };
   });

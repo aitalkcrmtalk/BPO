@@ -33,6 +33,7 @@ import { Route as AuthenticatedAppAssinaturaRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminPlanosRouteImport } from './routes/_authenticated/admin.planos'
 import { Route as AuthenticatedAdminEmpresasRouteImport } from './routes/_authenticated/admin.empresas'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
+import { Route as AuthenticatedAdminEmpresasEmpresaIdRouteImport } from './routes/_authenticated/admin.empresas.$empresaId'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -164,6 +165,12 @@ const AuthenticatedAdminDashboardRoute =
     path: '/dashboard',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminEmpresasEmpresaIdRoute =
+  AuthenticatedAdminEmpresasEmpresaIdRouteImport.update({
+    id: '/$empresaId',
+    path: '/$empresaId',
+    getParentRoute: () => AuthenticatedAdminEmpresasRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -177,7 +184,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
-  '/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
+  '/admin/empresas': typeof AuthenticatedAdminEmpresasRouteWithChildren
   '/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
   '/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
@@ -189,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/n8n-callback': typeof ApiPublicN8nCallbackRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
+  '/admin/empresas/$empresaId': typeof AuthenticatedAdminEmpresasEmpresaIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -202,7 +210,7 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
-  '/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
+  '/admin/empresas': typeof AuthenticatedAdminEmpresasRouteWithChildren
   '/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
   '/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
@@ -214,6 +222,7 @@ export interface FileRoutesByTo {
   '/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/n8n-callback': typeof ApiPublicN8nCallbackRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
+  '/admin/empresas/$empresaId': typeof AuthenticatedAdminEmpresasEmpresaIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -229,7 +238,7 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/cadastro/aguardando': typeof CadastroAguardandoRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
-  '/_authenticated/admin/empresas': typeof AuthenticatedAdminEmpresasRoute
+  '/_authenticated/admin/empresas': typeof AuthenticatedAdminEmpresasRouteWithChildren
   '/_authenticated/admin/planos': typeof AuthenticatedAdminPlanosRoute
   '/_authenticated/app/assinatura': typeof AuthenticatedAppAssinaturaRoute
   '/_authenticated/app/automacoes': typeof AuthenticatedAppAutomacoesRoute
@@ -241,6 +250,7 @@ export interface FileRoutesById {
   '/_authenticated/app/usuarios': typeof AuthenticatedAppUsuariosRoute
   '/api/public/n8n-callback': typeof ApiPublicN8nCallbackRoute
   '/api/public/register-tenant': typeof ApiPublicRegisterTenantRoute
+  '/_authenticated/admin/empresas/$empresaId': typeof AuthenticatedAdminEmpresasEmpresaIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/app/usuarios'
     | '/api/public/n8n-callback'
     | '/api/public/register-tenant'
+    | '/admin/empresas/$empresaId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/app/usuarios'
     | '/api/public/n8n-callback'
     | '/api/public/register-tenant'
+    | '/admin/empresas/$empresaId'
   id:
     | '__root__'
     | '/'
@@ -319,6 +331,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/usuarios'
     | '/api/public/n8n-callback'
     | '/api/public/register-tenant'
+    | '/_authenticated/admin/empresas/$empresaId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -504,18 +517,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/empresas/$empresaId': {
+      id: '/_authenticated/admin/empresas/$empresaId'
+      path: '/$empresaId'
+      fullPath: '/admin/empresas/$empresaId'
+      preLoaderRoute: typeof AuthenticatedAdminEmpresasEmpresaIdRouteImport
+      parentRoute: typeof AuthenticatedAdminEmpresasRoute
+    }
   }
 }
 
+interface AuthenticatedAdminEmpresasRouteChildren {
+  AuthenticatedAdminEmpresasEmpresaIdRoute: typeof AuthenticatedAdminEmpresasEmpresaIdRoute
+}
+
+const AuthenticatedAdminEmpresasRouteChildren: AuthenticatedAdminEmpresasRouteChildren =
+  {
+    AuthenticatedAdminEmpresasEmpresaIdRoute:
+      AuthenticatedAdminEmpresasEmpresaIdRoute,
+  }
+
+const AuthenticatedAdminEmpresasRouteWithChildren =
+  AuthenticatedAdminEmpresasRoute._addFileChildren(
+    AuthenticatedAdminEmpresasRouteChildren,
+  )
+
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
-  AuthenticatedAdminEmpresasRoute: typeof AuthenticatedAdminEmpresasRoute
+  AuthenticatedAdminEmpresasRoute: typeof AuthenticatedAdminEmpresasRouteWithChildren
   AuthenticatedAdminPlanosRoute: typeof AuthenticatedAdminPlanosRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
-  AuthenticatedAdminEmpresasRoute: AuthenticatedAdminEmpresasRoute,
+  AuthenticatedAdminEmpresasRoute: AuthenticatedAdminEmpresasRouteWithChildren,
   AuthenticatedAdminPlanosRoute: AuthenticatedAdminPlanosRoute,
 }
 
@@ -587,13 +622,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
