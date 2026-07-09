@@ -30,19 +30,6 @@ export const Route = createFileRoute("/api/public/register-tenant")({
         const admin = supabaseAdmin as any;
         const { fireN8nWebhook } = await import("@/lib/n8n.server");
 
-        // Diagnóstico: verifica se supabaseAdmin está usando service_role
-        const keyRaw = process.env.CLIENT_SUPABASE_SERVICE_ROLE_KEY ?? "";
-        let keyRole = "unknown";
-        try {
-          if (keyRaw.startsWith("sb_secret_")) keyRole = "sb_secret (novo formato)";
-          else if (keyRaw.startsWith("sb_publishable_")) keyRole = "sb_publishable (ERRADO)";
-          else if (keyRaw.split(".").length === 3) {
-            const payload = JSON.parse(atob(keyRaw.split(".")[1]));
-            keyRole = payload.role || "jwt sem role";
-          }
-        } catch { /* noop */ }
-        console.log("[register-tenant] service key role =", keyRole, "len=", keyRaw.length);
-
         // 1. Cria empresa
         const { data: empresa, error: empErr } = await admin
           .from("empresas")
@@ -55,7 +42,6 @@ export const Route = createFileRoute("/api/public/register-tenant")({
           .select("id")
           .single();
         if (empErr || !empresa) {
-          console.error("[register-tenant] insert empresas falhou:", empErr, "keyRole=", keyRole);
           return Response.json({ error: empErr?.message ?? "Falha ao criar empresa" }, { status: 500 });
         }
 
