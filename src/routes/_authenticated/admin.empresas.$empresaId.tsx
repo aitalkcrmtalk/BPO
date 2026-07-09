@@ -29,6 +29,14 @@ function EmpresaPerfilPage() {
   if (!data) return null;
 
   const { empresa, assinatura, usuarios, stats } = data;
+  type UsuarioRow = {
+    id: string;
+    nome: string | null;
+    email: string | null;
+    papel: string | null;
+    ativo: boolean | null;
+  };
+  const usuariosList = usuarios as UsuarioRow[];
   const itens = (assinatura?.itens_assinatura ?? []) as Array<{
     ativo: boolean;
     modulos: { id: string; nome: string; valor_base: number | null } | null;
@@ -100,12 +108,12 @@ function EmpresaPerfilPage() {
 
       {/* Usuários */}
       <section className="rounded-xl border bg-card p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold">Usuários ({usuarios.length})</h2>
-        {usuarios.length === 0 ? (
+        <h2 className="mb-4 text-lg font-semibold">Usuários ({usuariosList.length})</h2>
+        {usuariosList.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum usuário cadastrado.</p>
         ) : (
           <div className="divide-y rounded-md border">
-            {usuarios.map((u) => (
+            {usuariosList.map((u) => (
               <div key={u.id} className="flex items-center justify-between px-4 py-3 text-sm">
                 <div>
                   <div className="font-medium">{u.nome ?? "—"}</div>
