@@ -20,7 +20,7 @@ export const listAllEmpresas = createServerFn({ method: "GET" })
     const { data, error } = await admin
       .from("empresas")
       .select("*")
-      .order("criado_em", { ascending: false });
+      .order("nome", { ascending: true });
     if (error) throw new Error(error.message);
     return data ?? [];
   });
