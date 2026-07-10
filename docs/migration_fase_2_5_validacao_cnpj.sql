@@ -49,11 +49,23 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
 -- ✅ Adicionar constraint em empresas
+-- NOT VALID: ignora linhas existentes (CNPJs legados inválidos);
+-- a validação vale apenas para INSERT/UPDATE futuros.
+ALTER TABLE empresas DROP CONSTRAINT IF EXISTS check_cnpj_valido;
 ALTER TABLE empresas
 ADD CONSTRAINT check_cnpj_valido
-CHECK (cnpj IS NULL OR validar_cnpj(cnpj));
+CHECK (cnpj IS NULL OR validar_cnpj(cnpj)) NOT VALID;
 
 -- ✅ Adicionar constraint em clientes
+ALTER TABLE clientes DROP CONSTRAINT IF EXISTS check_cnpj_valido;
 ALTER TABLE clientes
 ADD CONSTRAINT check_cnpj_valido
-CHECK (cnpj IS NULL OR validar_cnpj(cnpj));
+CHECK (cnpj IS NULL OR validar_cnpj(cnpj)) NOT VALID;
+
+-- 🔎 Listar CNPJs legados inválidos para corrigir:
+-- SELECT id, cnpj FROM empresas WHERE cnpj IS NOT NULL AND NOT validar_cnpj(cnpj);
+-- SELECT id, cnpj FROM clientes WHERE cnpj IS NOT NULL AND NOT validar_cnpj(cnpj);
+--
+-- Depois de corrigir, validar retroativamente:
+-- ALTER TABLE empresas VALIDATE CONSTRAINT check_cnpj_valido;
+-- ALTER TABLE clientes VALIDATE CONSTRAINT check_cnpj_valido;
