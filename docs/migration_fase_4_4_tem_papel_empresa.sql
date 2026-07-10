@@ -2,10 +2,9 @@
 -- FASE 1.4: Corrigir tem_papel_empresa()
 -- ============================================
 
--- ❌ REMOVER função errada
-DROP FUNCTION IF EXISTS tem_papel_empresa(uuid, uuid, text);
-
--- ✅ CRIAR função corrigida
+-- ✅ Corrigir função via CREATE OR REPLACE (mesma assinatura e mesmos nomes
+-- de parâmetros da versão anterior — não podemos DROP porque várias policies
+-- dependem dela; DROP CASCADE derrubaria essas policies).
 CREATE OR REPLACE FUNCTION tem_papel_empresa(
     p_user_id UUID,
     p_empresa_id UUID,
