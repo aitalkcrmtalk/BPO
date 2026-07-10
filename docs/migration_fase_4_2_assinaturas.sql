@@ -5,10 +5,10 @@
 BEGIN;
 
 -- 0) Helpers auxiliares (garantia defensiva).
--- Nomes de parâmetros mudaram vs. versão anterior (p_user_id → _user_id);
--- Postgres exige DROP antes de recriar quando renomeamos parâmetros.
-DROP FUNCTION IF EXISTS public.tem_papel_empresa(uuid, uuid, text);
-CREATE OR REPLACE FUNCTION public.tem_papel_empresa(_user_id uuid, _empresa_id uuid, _papel text)
+-- Mantemos os nomes de parâmetros originais (p_user_id/p_empresa_id/p_papel)
+-- porque várias policies existentes dependem desta função — renomear
+-- exigiria DROP ... CASCADE e derrubaria essas policies.
+CREATE OR REPLACE FUNCTION public.tem_papel_empresa(p_user_id uuid, p_empresa_id uuid, p_papel text)
 RETURNS boolean
 LANGUAGE sql
 STABLE
@@ -17,9 +17,9 @@ SET search_path = public
 AS $$
   SELECT EXISTS (
     SELECT 1 FROM public.perfis
-    WHERE id = _user_id
-      AND empresa_id = _empresa_id
-      AND papel = _papel
+    WHERE id = p_user_id
+      AND empresa_id = p_empresa_id
+      AND papel = p_papel
       AND ativo = true
   );
 $$;
