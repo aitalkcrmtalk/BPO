@@ -5,6 +5,9 @@
 BEGIN;
 
 -- 0) Helpers auxiliares (garantia defensiva).
+-- Nomes de parâmetros mudaram vs. versão anterior (p_user_id → _user_id);
+-- Postgres exige DROP antes de recriar quando renomeamos parâmetros.
+DROP FUNCTION IF EXISTS public.tem_papel_empresa(uuid, uuid, text);
 CREATE OR REPLACE FUNCTION public.tem_papel_empresa(_user_id uuid, _empresa_id uuid, _papel text)
 RETURNS boolean
 LANGUAGE sql
