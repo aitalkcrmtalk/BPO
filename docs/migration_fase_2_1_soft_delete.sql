@@ -4,11 +4,11 @@
 
 -- ✅ ADICIONAR coluna ativo em clientes
 ALTER TABLE clientes
-ADD COLUMN ativo BOOLEAN DEFAULT true;
+ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT true;
 
 -- ✅ ADICIONAR coluna ativo em documentos
 ALTER TABLE documentos
-ADD COLUMN ativo BOOLEAN DEFAULT true;
+ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT true;
 
 -- ✅ ATUALIZAR políticas RLS para filtrar por ativo
 DROP POLICY IF EXISTS "clientes_select" ON clientes;
