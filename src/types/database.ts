@@ -3,6 +3,19 @@
 // ============================================
 
 // ============================================
+// LEGACY / COMPAT (mantido para código existente)
+// ============================================
+
+// Tipo Database permissivo para compatibilidade com o client Supabase.
+// Substituir por tipos gerados (`supabase gen types`) quando disponível.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Database = any;
+
+// Aliases legados referenciados por src/types/index.ts
+export type PapelPerfil = 'super_admin' | 'admin' | 'usuario';
+export type StatusAssinatura = 'ativa' | 'cancelada' | 'expirada' | 'suspensa';
+
+// ============================================
 // ENUMS
 // ============================================
 
