@@ -20,7 +20,6 @@ AS $$
     WHERE id = p_user_id
       AND empresa_id = p_empresa_id
       AND papel = p_papel
-      AND ativo = true
   );
 $$;
 GRANT EXECUTE ON FUNCTION public.tem_papel_empresa(uuid, uuid, text) TO authenticated;
