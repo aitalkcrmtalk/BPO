@@ -19,16 +19,17 @@ CREATE TABLE IF NOT EXISTS eventos (
 GRANT SELECT, INSERT ON public.eventos TO authenticated;
 GRANT ALL ON public.eventos TO service_role;
 
--- ✅ ADICIONAR índices
-CREATE INDEX idx_eventos_empresa_id ON eventos(empresa_id);
-CREATE INDEX idx_eventos_tabela ON eventos(tabela);
-CREATE INDEX idx_eventos_operacao ON eventos(operacao);
-CREATE INDEX idx_eventos_criado_em ON eventos(criado_em);
+-- ✅ ADICIONAR índices (idempotente)
+CREATE INDEX IF NOT EXISTS idx_eventos_empresa_id ON eventos(empresa_id);
+CREATE INDEX IF NOT EXISTS idx_eventos_tabela ON eventos(tabela);
+CREATE INDEX IF NOT EXISTS idx_eventos_operacao ON eventos(operacao);
+CREATE INDEX IF NOT EXISTS idx_eventos_criado_em ON eventos(criado_em);
 
 -- ✅ HABILITAR RLS
 ALTER TABLE eventos ENABLE ROW LEVEL SECURITY;
 
--- ✅ POLÍTICA RLS
+-- ✅ POLÍTICA RLS (idempotente)
+DROP POLICY IF EXISTS "eventos_select_own_empresa" ON eventos;
 CREATE POLICY "eventos_select_own_empresa" ON eventos
 FOR SELECT
 USING (
