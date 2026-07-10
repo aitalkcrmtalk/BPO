@@ -1,0 +1,67 @@
+Boa tarde! Entendi sua pergunta sobre as funcionalidades do Conta IA Captura e sua comparação com o projeto em questão. Vou analisar detalhadamente as capacidades e apresentar uma resposta completa para você.
+
+Boa tarde, Paulo! Vou analisar as funcionalidades do Conta IA Captura para fazer uma comparação técnica detalhada com o seu projeto.## 📊 Análise Comparativa: Seu Projeto vs. Conta IA Captura
+
+A resposta direta é: **Sim, tecnicamente seu projeto consegue replicar e superar as funcionalidades do Conta IA Captura.** Veja a análise detalhada:
+
+---
+
+## 🔍 O que é o Conta IA Captura?
+
+Basicamente é uma ferramenta **embarcada dentro do ERP Conta Azul** com foco em:
+
+| Funcionalidade | Descrição |
+|---|---|
+| **Captura de documentos** | Boletos, NFs, extratos, comprovantes, faturas de cartão |
+| **Canais de entrada** | WhatsApp, e-mail, upload manual, DDA |
+| **Leitura com IA** | OCR + LLM para extração de dados |
+| **Classificação automática** | Despesa ou receita |
+| **Sugestão de lançamentos** | Contas a pagar / contas a receber |
+| **Conciliação no ERP** | Vinculação automática dentro do Conta Azul |
+| **Foco em BPO** | Atende múltiplos clientes, reduz operacional |
+
+---
+
+## ✅ Mapeamento Técnico: Seu Projeto vs. Conta IA Captura
+
+### **Funcionalidades que você JÁ TEM provadas**
+- ✅ Upload de boleto → Google Drive → n8n trigger → análise LLM → email com dados extraídos
+- ✅ **Isso já é o core do Conta IA Captura funcionando**
+
+---
+
+### **Gap Analysis — O que falta para paridade**---
+
+## 🚀 Onde Seu Projeto SUPERA o Conta IA Captura
+
+Esse é o ponto mais estratégico da análise:
+
+**1. 🔓 Independência de ERP**
+O Conta IA Captura é **preso ao ecossistema Conta Azul**. Seu SaaS pode integrar com **qualquer ERP** (Bling, TOTVS, SAP, Omie, etc.) — isso é um diferencial **massivo** para o mercado BPO.
+
+**2. 👥 Multi-tenancy nativo para BPO**
+O Conta Azul foca no usuário final. Você foca no **escritório BPO** que atende dezenas de clientes simultaneamente — mercado diferente, proposta de valor diferente.
+
+**3. 📋 Processos além do financeiro**
+O Conta IA Captura só toca **financeiro**. Seu SaaS pode cobrir **todo o espectro de BPO**: RH, fiscal, procurement, etc.
+
+**4. 🤖 Agentes autônomos**
+Com sua experiência em agentes de IA, você pode ir muito além de OCR — **agentes que tomam decisões**, aprovam lançamentos dentro de regras, escalam exceções para humanos.
+
+---
+
+## ⚠️ Ponto de Atenção Estratégico
+
+> O **DDA (Débito Direto Autorizado)** é o único item de **esforço alto**. Exige integração com Open Finance / APIs bancárias (regulatório pesado). Recomendo deixar para **fases posteriores** e focar nos canais de entrada mais simples no MVP.
+
+---
+
+## 🎯 Conclusão
+
+**Paridade funcional com Conta IA Captura: ~75% no MVP, 100% em 2-3 sprints adicionais.**
+
+Mais importante: seu projeto tem **potencial arquitetural superior** pela natureza **agnóstica de ERP**, foco em **BPO multi-cliente** e capacidade de expansão para **automações além do financeiro**. 
+
+O Conta IA Captura é um produto dentro de um ERP. O seu é uma **plataforma independente** — proposta de valor completamente diferente e mais ampla. 💡
+
+Quando quiser, podemos iniciar a **modelagem de dados** do core do sistema!

@@ -1,0 +1,25 @@
+🏗️ Destaques da Arquitetura Implementada
+
+Isolamento Multi-tenant (Empresa e Cliente):
+
+Utilizamos Row Level Security (RLS) em todas as tabelas.
+A segurança é aplicada em duas camadas: a Empresa (seu cliente BPO) e o Cliente (o cliente final do BPO).
+Implementei funções auxiliares como public.empresa_atual_id() e public.usuario_tem_acesso_cliente() para tornar as políticas de segurança limpas e performáticas.
+
+Gestão de Assinaturas e Módulos:
+
+Tabelas assinaturas, modulos e itens_assinatura permitem o controle granular do que cada empresa contratou.
+O sistema suporta faturamento por volume (ex: número de clientes ativos) através de metadados na assinatura.
+
+Automação de Perfis:
+
+Uma Trigger automática em auth.users cria o perfil do usuário e, se for o primeiro acesso sem convite, cria automaticamente a empresa e uma assinatura trial.
+
+Pronto para IA (AaaS):
+
+A tabela documentos já conta com suporte a vetores (pgvector) para busca semântica e RAG.
+A tabela fila_processamento gerencia o pipeline de OCR e interpretação por LLMs de forma assíncrona.
+
+Flexibilidade Operacional:
+
+Tabela configuracoes_modulos permite que cada módulo (ex: Tributário Municipal) tenha regras de lançamento específicas para cada cliente final.

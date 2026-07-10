@@ -1,0 +1,28 @@
+O uso do **Lovable** no front-end aliado ao **n8n** para orquestração e **Supabase** como o cérebro da persistência e 
+segurança é a definição de uma arquitetura moderna de AaaS (Automation as a Service).
+
+1. MCP com n8n e Supabase: O multiplicador de força
+A ideia de usar **MCP (Model Context Protocol)** aqui é brilhante e "fora da caixa". 
+*   **No n8n**: Você pode expor servidores MCP para que seus agentes de IA dentro dos fluxos do n8n consultem o schema do Supabase em tempo real. 
+Isso permite que a IA entenda a estrutura de tabelas (como `configuracoes_modulos`) sem que você precise mapear cada campo manualmente no nó do n8n.
+*   **No Supabase**: O MCP pode atuar como uma ponte para que ferramentas de desenvolvimento (como o Cursor) executem migrações SQL ou ajustem políticas de **RLS** diretamente, 
+mantendo o contexto do projeto BPO sempre atualizado.
+
+2. Lovable: O Front-end "Low-Code" com Poder de Código
+O **Lovable** é excelente para o seu perfil de Gestor de Agentes, pois ele gera aplicações React/Vite de alta qualidade a partir de linguagem natural.
+**Dúvidas comuns e como resolvê-las:**
+*   **Integração com Supabase**: O Lovable possui integração nativa. Ele consegue ler o schema que acabamos de criar e gerar telas de CRUD (Cadastro, Consulta, Edição) automaticamente.
+*   **Sincronização**: Sempre que alterarmos o SQL no Supabase (como o script que gerei), você pode simplesmente informar ao Lovable: 
+*"Atualize o contexto do banco de dados e gere a tela de gestão de Clientes do BPO"*.
+*   **Limitação**: O Lovable é focado na UI/UX. A lógica pesada de processamento de documentos (OCR/LLM) deve permanecer no **n8n** e nas **Edge Functions** do Supabase para garantir 
+a escalabilidade que você busca.
+
+3. Fluxo de Dados Proposto
+1.  **Entrada**: Documento chega via Google Drive (monitorado pelo n8n).
+2.  **Processamento**: n8n chama a OpenAI para interpretar o documento com base nas regras da tabela `configuracoes_modulos` do Supabase.
+3.  **Persistência**: O resultado é salvo na tabela `documentos` e o status atualizado na `fila_processamento`.
+4.  **Interface**: O cliente final visualiza o lançamento pronto no dashboard gerado pelo **Lovable**.
+
+**Resumindo**
+A união do **MCP** com esse stack cria um ecossistema onde a IA não apenas processa dados, mas entende a própria infraestrutura onde está inserida.
+O **Lovable** cuidará da última milha (a interface com o usuário), enquanto o **Supabase** garante que o isolamento multi-tenant e a segurança (RLS) sejam mantidos de forma inabalável.

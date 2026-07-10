@@ -1,0 +1,31 @@
+Ao padronizarmos o MCP para ser consumido pelo **n8n** e pela **OpenAI**, transformamos o banco de dados de um repositório estático em um recurso 
+dinâmico que os agentes podem "entender" e "operar" sozinhos.
+
+🛠️ Estratégia de Implementação: MCP Supabase
+
+Para que essa implementação seja funcional e segura (respeitando o isolamento de tenants), devemos seguir este roteiro:
+
+1. Padronização do Schema como Recurso (Contexto)
+O servidor MCP não deve apenas executar SQL; ele deve expor o **Contexto do Negócio**.
+Ferramenta MCP: Expor o schema `public` (tabelas em português como `empresas`, `clientes`, `documentos`) para que a OpenAI entenda a hierarquia de dados
+sem que você precise explicar o banco em cada prompt.
+Vantagem: Quando o n8n enviar um documento para a OpenAI, o agente via MCP pode perguntar: *"Quais são as regras de lançamento na tabela `configuracoes_modulos` 
+para o Cliente X? e obter a resposta em milissegundos.
+
+2. Integração com n8n (Orquestração Inteligente)
+No n8n, em vez de nós fixos de "Postgres", usaremos o MCP para criar **Nós de Agente**.
+Fluxo: O n8n recebe o arquivo do Google Drive -> Chama o Agente -> O Agente usa o MCP para consultar o Supabase e decidir o próximo passo -> O Agente executa a ação.
+ROI: Isso reduz drasticamente o número de nós manuais e a manutenção dos fluxos, pois a lógica passa a ser governada pelo entendimento da IA sobre o banco.
+
+#3. Segurança e Governança (RLS via MCP)
+Como Líder Técnico, minha prioridade é a blindagem:
+O servidor MCP deve respeitar as políticas de **RLS** que já criamos. Mesmo via MCP, o agente só terá acesso aos dados que o token de autenticação permitir.
+Utilizaremos o MCP para monitorar a `fila_processamento`, permitindo que a IA identifique gargalos e sugira otimizações de forma proativa.
+
+💡 Insight do Líder Técnico
+Ao adotar o MCP agora, você está preparando o terreno para o **Lovable**. Quando formos gerar o front-end, o Lovable poderá consumir esse mesmo contexto técnico, 
+garantindo que a interface seja um reflexo fiel das regras de negócio do banco.
+
+Resumindo
+Implementar o **MCP do Supabase** padronizado para n8n e OpenAI é o caminho mais rápido para transformar seu SaaS em um ecossistema de **Agentes Autônomos**. 
+Isso elimina a rigidez do código tradicional e coloca a IA no comando da operação, garantindo a agilidade que o mercado de BPO exige.
